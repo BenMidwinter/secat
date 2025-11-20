@@ -10,7 +10,7 @@
 <style>
     :root {
         --primary: #2c3e50;
-        --bg: #525659; /* Dark background for the workspace */
+        --bg: #525659; 
         --border: #ccc;
         --col-A: #e74c3c; 
         --col-B: #e67e22; 
@@ -47,31 +47,49 @@
         z-index: 10;
     }
 
-    /* RIGHT: PREVIEW (The Continuous Sheet) */
+    /* RIGHT: PREVIEW */
     .preview-panel {
         width: 65%;
         background-color: var(--bg);
         overflow-y: auto;
-        padding: 40px; /* Grey padding around the white sheet */
+        padding: 40px;
         display: flex;
         justify-content: center;
+        align-items: flex-start; /* Align to top so it grows down */
     }
 
-    /* The Single White Sheet */
+    /* CONTINUOUS SHEET */
     .document-sheet {
-        width: 210mm; /* A4 Width */
-        min-height: 297mm; /* At least one page long */
+        width: 210mm; 
+        min-height: 297mm; 
         background: white;
-        padding: 20mm; /* Print Margins */
+        padding: 20mm; 
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         gap: 20px;
+        margin-bottom: 40px; /* Space at bottom of scroll */
+        position: relative;
+    }
+
+    /* Visual Guide for Page Breaks (Approximate) */
+    .print-break {
+        border-bottom: 2px dashed #eee;
+        margin: 20px 0;
+        position: relative;
+    }
+    .print-break::after {
+        content: "Approx. Page Break";
+        position: absolute;
+        right: 0;
+        top: -15px;
+        font-size: 9px;
+        color: #ccc;
     }
 
     /* --------------------------------------------------
-       EDITOR STYLES
+       STYLES
     -------------------------------------------------- */
     h1 { font-family: 'Bitter', serif; font-size: 1.5rem; color: var(--primary); margin-top:0; }
     h2 { font-size: 1rem; color: #666; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;}
@@ -137,9 +155,7 @@
     .btn:hover { background: #34495e; }
     .btn-clear { background: #95a5a6; }
 
-    /* --------------------------------------------------
-       REPORT ELEMENTS
-    -------------------------------------------------- */
+    /* REPORT COMPONENTS */
     .report-header {
         display: flex;
         justify-content: space-between;
@@ -160,7 +176,6 @@
         font-size: 11px;
         line-height: 1.5;
         color: #444;
-        /* Prevent this box from splitting across pages */
         break-inside: avoid; 
     }
 
@@ -177,7 +192,6 @@
         background: #fafafa;
         padding: 15px;
         border-radius: 4px;
-        /* This is the magic Print CSS command */
         break-inside: avoid; 
     }
     .summary-block h4 { margin: 0 0 10px 0; font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
@@ -229,9 +243,7 @@
         text-align: center;
     }
 
-    /* --------------------------------------------------
-       PRINT MEDIA QUERY
-    -------------------------------------------------- */
+    /* PRINT */
     @media print {
         body { background: white; height: auto; overflow: visible; }
         .editor-panel { display: none; }
@@ -245,7 +257,11 @@
             box-shadow: none;
             border: none;
         }
+        /* Hide visual helpers */
+        .print-break { display: none; }
+        
         button { display: none; }
+        .domain-section { page-break-inside: avoid; }
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 </style>
@@ -311,6 +327,8 @@
                 <h4>Executive Summary</h4>
                 <div id="prev-summary" class="summary-text">No summary provided.</div>
             </div>
+
+            <div class="print-break"></div>
 
             <div class="summary-block">
                 <h4>Future Aims</h4>
@@ -496,29 +514,32 @@ window.updateChart = function() {
     if(!container) return;
     container.innerHTML = ""; 
     
-    // CHART STRATEGY: Open Box (No Border Rect)
-    const width = 450, height = 450, margin = 40;
+    // INCREASED CANVAS + MARGINS
+    const width = 500, height = 500, margin = 60;
     const svg = d3.select("#quadrant-chart").append("svg").attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
     const g = svg.append("g").attr("transform", `translate(${margin},${margin})`);
     const innerW = width - margin*2; 
     const innerH = height - margin*2;
     
-    // SCALES: -2 to 12
+    // SCALES: -2 to 12 (Zoomed Out)
     const x = d3.scaleLinear().domain([-2, 12]).range([0, innerW]);
     const y = d3.scaleLinear().domain([-2, 12]).range([innerH, 0]); 
 
-    // AXES ONLY - NO OUTER BOX
+    // CROSSHAIRS
     g.append("line").attr("x1", x(5)).attr("y1", y(-2)).attr("x2", x(5)).attr("y2", y(12)).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
     g.append("line").attr("x1", x(-2)).attr("y1", y(5)).attr("x2", x(12)).attr("y2", y(5)).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
 
-    // OPTIONAL: Draw faint guides at 0 and 10 if you want "limits" without a hard box
-    // g.append("rect").attr("x", x(0)).attr("y", y(10)).attr("width", x(10)-x(0)).attr("height", y(0)-y(10)).attr("fill", "none").attr("stroke", "#eee");
+    // AXIS LABELS (High Eng / Flow etc)
+    g.append("text").attr("x", x(5)).attr("y", y(12)).text("HIGH ENGAGEMENT").attr("text-anchor", "middle").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
+    g.append("text").attr("x", x(5)).attr("y", y(-2)+8).text("LOW ENGAGEMENT").attr("text-anchor", "middle").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
+    g.append("text").attr("x", x(-2)).attr("y", y(5)+3).text("RIGID").attr("text-anchor", "start").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
+    g.append("text").attr("x", x(12)).attr("y", y(5)+3).text("FLOW").attr("text-anchor", "end").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
 
-    // CORNER LABELS
-    g.append("text").attr("x", x(0)).attr("y", y(10)-5).text("RIGID / STUCK").attr("text-anchor", "start").style("font-size", "9px").style("fill", "#c0392b").style("font-weight", "bold");
-    g.append("text").attr("x", x(10)).attr("y", y(10)-5).text("FLOW / ADAPTIVE").attr("text-anchor", "end").style("font-size", "9px").style("fill", "#27ae60").style("font-weight", "bold");
-    g.append("text").attr("x", x(0)).attr("y", y(0)+12).text("AVOIDANT").attr("text-anchor", "start").style("font-size", "9px").style("fill", "#7f8c8d");
-    g.append("text").attr("x", x(10)).attr("y", y(0)+12).text("OBSERVER").attr("text-anchor", "end").style("font-size", "9px").style("fill", "#2980b9");
+    // CORNER LABELS (Pushed out to -1.5 and 11.5)
+    g.append("text").attr("x", x(-1.5)).attr("y", y(11.5)).text("RIGID / STUCK").attr("text-anchor", "start").style("font-size", "10px").style("fill", "#c0392b").style("font-weight", "bold");
+    g.append("text").attr("x", x(11.5)).attr("y", y(11.5)).text("FLOW / ADAPTIVE").attr("text-anchor", "end").style("font-size", "10px").style("fill", "#27ae60").style("font-weight", "bold");
+    g.append("text").attr("x", x(-1.5)).attr("y", y(-1.5)).text("AVOIDANT").attr("text-anchor", "start").style("font-size", "10px").style("fill", "#7f8c8d").style("font-weight", "bold");
+    g.append("text").attr("x", x(11.5)).attr("y", y(-1.5)).text("OBSERVER").attr("text-anchor", "end").style("font-size", "10px").style("fill", "#2980b9").style("font-weight", "bold");
 
     // DATA
     let points = [];
@@ -544,7 +565,7 @@ window.updateChart = function() {
             group[0].dx = 0; group[0].dy = 0;
             finalData.push(group[0]);
         } else {
-            const radius = 14; 
+            const radius = 15; 
             const step = (2 * Math.PI) / group.length;
             group.forEach((p, i) => {
                 p.dx = Math.cos(step * i) * radius;
