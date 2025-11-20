@@ -13,11 +13,11 @@
         --bg: #f0f2f5;
         --border: #ccc;
         /* Domain Colors */
-        --col-A: #e74c3c; /* Red */
-        --col-B: #e67e22; /* Orange */
-        --col-C: #f1c40f; /* Yellow (Darker for text) */
-        --col-D: #27ae60; /* Green */
-        --col-E: #2980b9; /* Blue */
+        --col-A: #e74c3c; 
+        --col-B: #e67e22; 
+        --col-C: #f1c40f; 
+        --col-D: #27ae60; 
+        --col-E: #2980b9; 
     }
 
     body {
@@ -126,12 +126,13 @@
         width: 210mm;
         min-height: 297mm;
         background: white;
-        padding: 15mm 15mm; /* Standard margins */
+        padding: 15mm 15mm;
         box-shadow: 0 0 15px rgba(0,0,0,0.5);
         position: relative;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        margin-bottom: 20px; /* Spacing between pages in preview */
     }
 
     /* HEADER */
@@ -144,7 +145,10 @@
         margin-bottom: 20px;
     }
     .header-left { display: flex; flex-direction: column; gap: 5px; }
-    .logo-img { height: 50px; object-fit: contain; margin-bottom: 5px; }
+    
+    /* LOGO PLACEHOLDER */
+    .logo-img { height: 50px; object-fit: contain; margin-bottom: 5px; display: block; }
+
     .report-title { font-family: 'Bitter', serif; font-size: 22px; color: #000; }
     .report-meta { font-size: 11px; text-align: right; line-height: 1.4; color: #444; }
 
@@ -172,7 +176,7 @@
         padding: 15px;
         margin-bottom: 10px;
         border-radius: 4px;
-        flex: 0 0 auto; /* Don't shrink */
+        flex: 0 0 auto;
     }
     .summary-block h4 { margin: 0 0 10px 0; font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
     .summary-text { font-size: 11px; white-space: pre-wrap; font-family: 'Inter', sans-serif; }
@@ -206,7 +210,7 @@
     /* Dynamic Domain Colors */
     .bg-A { background-color: var(--col-A); }
     .bg-B { background-color: var(--col-B); }
-    .bg-C { background-color: #d4ac0d; color: black; } /* Darker yellow for readability */
+    .bg-C { background-color: #d4ac0d; color: black; }
     .bg-D { background-color: var(--col-D); }
     .bg-E { background-color: var(--col-E); }
 
@@ -228,11 +232,10 @@
         .a4-page {
             width: 100%; margin: 0; padding: 15mm; 
             box-shadow: none; page-break-after: always;
-            min-height: 0; /* Let content dictate height for print */
+            min-height: 0; 
         }
         .a4-page:last-child { page-break-after: auto; }
         button { display: none; }
-        /* Force background colors */
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 </style>
@@ -249,11 +252,7 @@
         </div>
 
         <div class="card">
-            <h2>1. Branding & Bio</h2>
-            <div class="form-group">
-                <label>Logo URL (Optional)</label>
-                <input type="text" id="input-logo" placeholder="https://your-website.com/logo.png" oninput="updatePreview()">
-            </div>
+            <h2>1. Biographical Info</h2>
             <div class="form-group"><label>Client Name</label><input type="text" id="input-name" oninput="updatePreview()"></div>
             <div class="form-group"><label>Date of Assessment</label><input type="date" id="input-date" oninput="updatePreview()"></div>
             <div class="form-group"><label>Assessor</label><input type="text" id="input-assessor" oninput="updatePreview()"></div>
@@ -276,7 +275,7 @@
         <div class="a4-page">
             <div class="report-header">
                 <div class="header-left">
-                    <img id="prev-logo" class="logo-img" style="display:none;" alt="Logo">
+                    <img src="https://via.placeholder.com/150x50?text=YOUR+LOGO+HERE" class="logo-img" alt="Logo">
                     <div class="report-title">SECAT Confidential Report</div>
                 </div>
                 <div class="report-meta">
@@ -313,7 +312,10 @@
 
         <div class="a4-page">
             <div class="report-header">
-                <div class="report-title" style="font-size: 18px;">Assessment Breakdown</div>
+                <div class="header-left">
+                    <img src="https://via.placeholder.com/150x50?text=YOUR+LOGO+HERE" class="logo-img" alt="Logo">
+                    <div class="report-title" style="font-size: 18px;">Assessment Breakdown</div>
+                </div>
                 <div class="report-meta" id="page2-meta">Client Name</div>
             </div>
 
@@ -339,14 +341,16 @@ const domains = {
 
 // DOMAIN-SPECIFIC Analysis Phrases
 const analysisData = {
-    A: { // Music/Play
+    A: { 
         low: ["Engagement limited by rigid adherence to a single idea.", "Withdrew when musical demand increased (Avoidance).", "Play was disconnected from the shared pulse."],
         mid: ["Initiated only when explicitly prompted (Compliance).", "Persisted but struggled to adapt to tempo changes.", "Attended to the instrument mechanics rather than the shared music."],
         high: ["Seamlessly adapted play to match context changes.", "Initiated new creative ideas spontaneously.", "Demonstrated 'flow' and psychological flexibility in play."]
     },
-    B: { // Emotion
+    B: { 
         low: ["Affect was flat or incongruent with the activity.", "Used the medium to drown out/mask feelings.", "Struggled to tolerate silence or stillness."],
         mid: ["Labelled emotions correctly but appeared detached.", "Expression felt performative or scripted.", "Regulated by strictly controlling the activity."],
         high: ["Used the arts to safely hold difficult emotions.", "Demonstrated congruence between affect and activity.", "Shifted emotional state adaptively."]
     },
-    C: { // Social
+    C: { 
+        low: ["Struggled to distinguish 'my turn' vs 'your turn'.", "Play was parallel/isolated; ignored social cues.", "Communication was purely functional (needs-based)."],
+        mid: ["Turn-taking was polite but rule-bound.", "Waited for permission to
