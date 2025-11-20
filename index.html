@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECAT - Summary of Engagement in Creative Arts Therapy</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Bitter:wght@700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary: #2c3e50;
+        --bg: #f0f2f5;
+        --border: #ccc;
+        /* Domain Colors */
+        --col-A: #e74c3c; /* Red */
+        --col-B: #e67e22; /* Orange */
+        --col-C: #f1c40f; /* Yellow (Darker for text) */
+        --col-D: #27ae60; /* Green */
+        --col-E: #2980b9; /* Blue */
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: #333;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* --------------------------------------------------
+       LAYOUT
+    -------------------------------------------------- */
+    .app-container { display: flex; width: 100%; height: 100%; }
+
+    /* LEFT: EDITOR */
+    .editor-panel {
+        width: 35%;
+        min-width: 380px;
+        background: #fff;
+        border-right: 1px solid #ccc;
+        overflow-y: auto;
+        padding: 20px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 10;
+    }
+
+    /* RIGHT: PREVIEW */
+    .preview-panel {
+        width: 65%;
+        background: #525659;
+        overflow-y: auto;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    /* --------------------------------------------------
+       EDITOR STYLES
+    -------------------------------------------------- */
+    h1 { font-family: 'Bitter', serif; font-size: 1.4rem; color: var(--primary); margin-top:0; }
+    h2 { font-size: 1rem; color: #666; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;}
+    
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 4px; }
+    
+    input, textarea, select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-family: inherit;
+        box-sizing: border-box;
+        font-size: 0.9rem;
+    }
+    textarea { resize: vertical; min-height: 50px; }
+
+    .card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .domain-header-edit {
+        font-weight: bold;
+        padding: 5px 0;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #ddd;
+        color: var(--primary);
+    }
+
+    /* SLIDERS & BANDS */
+    .slider-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+    .slider-group { flex: 1; }
+    .range-input { width: 100%; cursor: pointer; accent-color: #666; }
+    
+    .band-indicator {
+        font-size: 0.7rem; font-weight: bold; padding: 2px 6px;
+        border-radius: 4px; color: white; background: #ccc;
+        display: inline-block; width: 100%; text-align: center; box-sizing: border-box;
+    }
+    .band-1 { background: #c0392b; } /* Stuck */
+    .band-2 { background: #f39c12; } /* Pliance */
+    .band-3 { background: #27ae60; } /* Flow */
+
+    .btn {
+        background: var(--primary); color: white; border: none;
+        padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;
+        margin-bottom: 10px; transition: 0.2s;
+    }
+    .btn:hover { background: #34495e; }
+    .btn-clear { background: #95a5a6; }
+
+    /* --------------------------------------------------
+       A4 PREVIEW PAGES (CSS PRINT MAGIC)
+    -------------------------------------------------- */
+    .a4-page {
+        width: 210mm;
+        min-height: 297mm;
+        background: white;
+        padding: 15mm 15mm; /* Standard margins */
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        position: relative;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* HEADER */
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #333;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    .header-left { display: flex; flex-direction: column; gap: 5px; }
+    .logo-img { height: 50px; object-fit: contain; margin-bottom: 5px; }
+    .report-title { font-family: 'Bitter', serif; font-size: 22px; color: #000; }
+    .report-meta { font-size: 11px; text-align: right; line-height: 1.4; color: #444; }
+
+    /* SECTIONS */
+    .intro-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-left: 4px solid var(--primary);
+        font-size: 11px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        color: #444;
+    }
+
+    .quadrant-wrapper {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: center;
+        margin: 10px 0 20px 0;
+    }
+
+    .summary-block {
+        border: 1px solid #ddd;
+        background: #fafafa;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        flex: 0 0 auto; /* Don't shrink */
+    }
+    .summary-block h4 { margin: 0 0 10px 0; font-size: 14px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .summary-text { font-size: 11px; white-space: pre-wrap; font-family: 'Inter', sans-serif; }
+
+    /* DOMAINS ON PAGE 2 */
+    .domain-section {
+        margin-bottom: 25px;
+        break-inside: avoid; /* Keep table together on print */
+    }
+    
+    .domain-title-bar {
+        color: white;
+        padding: 6px 10px;
+        font-weight: bold;
+        font-size: 14px;
+        border-radius: 4px 4px 0 0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        border: 1px solid #ccc;
+    }
+    .report-table th { background: #eee; padding: 6px; text-align: left; border: 1px solid #ccc; }
+    .report-table td { padding: 6px; border: 1px solid #ccc; vertical-align: top; }
+    .score-cell { text-align: center; font-weight: bold; width: 35px; }
+    
+    /* Dynamic Domain Colors */
+    .bg-A { background-color: var(--col-A); }
+    .bg-B { background-color: var(--col-B); }
+    .bg-C { background-color: #d4ac0d; color: black; } /* Darker yellow for readability */
+    .bg-D { background-color: var(--col-D); }
+    .bg-E { background-color: var(--col-E); }
+
+    .footer {
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        font-size: 9px;
+        color: #999;
+    }
+
+    /* --------------------------------------------------
+       PRINT MEDIA QUERY
+    -------------------------------------------------- */
+    @media print {
+        body { background: white; height: auto; overflow: visible; }
+        .editor-panel { display: none; }
+        .preview-panel { width: 100%; padding: 0; background: white; display: block; }
+        .a4-page {
+            width: 100%; margin: 0; padding: 15mm; 
+            box-shadow: none; page-break-after: always;
+            min-height: 0; /* Let content dictate height for print */
+        }
+        .a4-page:last-child { page-break-after: auto; }
+        button { display: none; }
+        /* Force background colors */
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="editor-panel">
+        <h1>SECAT Editor</h1>
+        
+        <div class="form-group">
+            <button class="btn" onclick="window.print()">🖨️ Save Report as PDF</button>
+            <button class="btn btn-clear" onclick="clearAllData()">Clear Form</button>
+        </div>
+
+        <div class="card">
+            <h2>1. Branding & Bio</h2>
+            <div class="form-group">
+                <label>Logo URL (Optional)</label>
+                <input type="text" id="input-logo" placeholder="https://your-website.com/logo.png" oninput="updatePreview()">
+            </div>
+            <div class="form-group"><label>Client Name</label><input type="text" id="input-name" oninput="updatePreview()"></div>
+            <div class="form-group"><label>Date of Assessment</label><input type="date" id="input-date" oninput="updatePreview()"></div>
+            <div class="form-group"><label>Assessor</label><input type="text" id="input-assessor" oninput="updatePreview()"></div>
+            <div class="form-group"><label>Service / School</label><input type="text" id="input-service" oninput="updatePreview()"></div>
+        </div>
+
+        <div class="card">
+            <h2>2. Formulation</h2>
+            <label>Executive Summary</label>
+            <textarea id="input-summary" oninput="updatePreview()"></textarea>
+            <label style="margin-top:10px">Future Aims (One per line)</label>
+            <textarea id="input-aims" oninput="updatePreview()"></textarea>
+        </div>
+
+        <div id="domains-editor"></div>
+    </div>
+
+    <div class="preview-panel">
+        
+        <div class="a4-page">
+            <div class="report-header">
+                <div class="header-left">
+                    <img id="prev-logo" class="logo-img" style="display:none;" alt="Logo">
+                    <div class="report-title">SECAT Confidential Report</div>
+                </div>
+                <div class="report-meta">
+                    <span id="prev-name">Client Name</span><br>
+                    <span id="prev-date">Date</span><br>
+                    <span id="prev-assessor">Assessor</span><br>
+                    <span id="prev-service">Service</span>
+                </div>
+            </div>
+
+            <div class="intro-box">
+                <strong>What is SECAT?</strong><br>
+                The Summary of Engagement in Creative Arts Therapy (SECAT) assesses not just the <em>amount</em> of engagement (Topography), but the <em>quality</em> of the psychological flexibility (Function). 
+                <br><br>
+                <strong>Understanding the Graph:</strong><br>
+                • <strong>X-Axis (Flexibility):</strong> Measures adaptability. 0-3 = Rigid/Stuck. 4-6 = Rule-Following/Compliant. 7-10 = Adaptive Flow.<br>
+                • <strong>Y-Axis (Engagement):</strong> Measures observable skill and participation frequency.
+            </div>
+
+            <div class="quadrant-wrapper" id="quadrant-chart"></div>
+
+            <div class="summary-block" style="flex-grow: 1;">
+                <h4>Executive Summary</h4>
+                <div id="prev-summary" class="summary-text">No summary provided.</div>
+            </div>
+
+            <div class="summary-block">
+                <h4>Future Aims</h4>
+                <div id="prev-aims" class="summary-text"></div>
+            </div>
+
+            <div class="footer">SECAT© 2025. Summary of Engagement in Creative Arts Therapy.</div>
+        </div>
+
+        <div class="a4-page">
+            <div class="report-header">
+                <div class="report-title" style="font-size: 18px;">Assessment Breakdown</div>
+                <div class="report-meta" id="page2-meta">Client Name</div>
+            </div>
+
+            <div id="domains-preview">
+                </div>
+
+            <div class="footer">SECAT© 2025. Summary of Engagement in Creative Arts Therapy.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+/* --------------------------------------------------
+   DATA CONFIGURATION
+-------------------------------------------------- */
+const domains = {
+    A: { title: "A: Engagement & Participation", color: "#e74c3c", criteria: ["A1. Initiating Play", "A2. Persisting/Adapting", "A3. Attending"] },
+    B: { title: "B: Emotional Expression", color: "#e67e22", criteria: ["B1. Expressing Emotions", "B2. Regulatory Use", "B3. Appropriateness"] },
+    C: { title: "C: Social Interaction", color: "#f1c40f", criteria: ["C1. Turn-taking", "C2. Collaborating", "C3. Communication Mode"] },
+    D: { title: "D: Interaction with Media", color: "#27ae60", criteria: ["D1. Control/Manipulation", "D2. Physical Presence", "D3. Expressive Range"] },
+    E: { title: "E: Cognitive Skills", color: "#2980b9", criteria: ["E1. Recalling Moments", "E2. Sequencing Ideas", "E3. Problem Solving"] }
+};
+
+// DOMAIN-SPECIFIC Analysis Phrases
+const analysisData = {
+    A: { // Music/Play
+        low: ["Engagement limited by rigid adherence to a single idea.", "Withdrew when musical demand increased (Avoidance).", "Play was disconnected from the shared pulse."],
+        mid: ["Initiated only when explicitly prompted (Compliance).", "Persisted but struggled to adapt to tempo changes.", "Attended to the instrument mechanics rather than the shared music."],
+        high: ["Seamlessly adapted play to match context changes.", "Initiated new creative ideas spontaneously.", "Demonstrated 'flow' and psychological flexibility in play."]
+    },
+    B: { // Emotion
+        low: ["Affect was flat or incongruent with the activity.", "Used the medium to drown out/mask feelings.", "Struggled to tolerate silence or stillness."],
+        mid: ["Labelled emotions correctly but appeared detached.", "Expression felt performative or scripted.", "Regulated by strictly controlling the activity."],
+        high: ["Used the arts to safely hold difficult emotions.", "Demonstrated congruence between affect and activity.", "Shifted emotional state adaptively."]
+    },
+    C: { // Social
