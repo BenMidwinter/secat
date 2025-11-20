@@ -10,7 +10,7 @@
 <style>
     :root {
         --primary: #2c3e50;
-        --bg: #f0f2f5;
+        --bg: #f4f7f6;
         --border: #ccc;
         /* Domain Colors */
         --col-A: #e74c3c; 
@@ -36,10 +36,10 @@
     -------------------------------------------------- */
     .app-container { display: flex; width: 100%; height: 100%; }
 
-    /* LEFT: EDITOR */
+    /* LEFT: EDITOR (Scrollable) */
     .editor-panel {
         width: 35%;
-        min-width: 380px;
+        min-width: 400px;
         background: #fff;
         border-right: 1px solid #ccc;
         overflow-y: auto;
@@ -48,7 +48,7 @@
         z-index: 10;
     }
 
-    /* RIGHT: PREVIEW */
+    /* RIGHT: PREVIEW (Scrollable) */
     .preview-panel {
         width: 65%;
         background: #525659;
@@ -57,13 +57,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 30px;
     }
 
     /* --------------------------------------------------
        EDITOR STYLES
     -------------------------------------------------- */
-    h1 { font-family: 'Bitter', serif; font-size: 1.4rem; color: var(--primary); margin-top:0; }
+    h1 { font-family: 'Bitter', serif; font-size: 1.5rem; color: var(--primary); margin-top:0; }
     h2 { font-size: 1rem; color: #666; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;}
     
     .form-group { margin-bottom: 15px; }
@@ -98,14 +98,14 @@
     }
 
     /* SLIDERS & BANDS */
-    .slider-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+    .slider-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 5px; }
     .slider-group { flex: 1; }
-    .range-input { width: 100%; cursor: pointer; accent-color: #666; }
+    .range-input { width: 100%; cursor: pointer; accent-color: #555; }
     
     .band-indicator {
         font-size: 0.7rem; font-weight: bold; padding: 2px 6px;
         border-radius: 4px; color: white; background: #ccc;
-        display: inline-block; width: 100%; text-align: center; box-sizing: border-box;
+        display: inline-block; width: 100%; text-align: center;
     }
     .band-1 { background: #c0392b; } /* Stuck */
     .band-2 { background: #f39c12; } /* Pliance */
@@ -126,13 +126,12 @@
         width: 210mm;
         min-height: 297mm;
         background: white;
-        padding: 15mm 15mm;
-        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        padding: 15mm 15mm; 
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
         position: relative;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        margin-bottom: 20px; /* Spacing between pages in preview */
     }
 
     /* HEADER */
@@ -146,17 +145,23 @@
     }
     .header-left { display: flex; flex-direction: column; gap: 5px; }
     
-    /* LOGO PLACEHOLDER */
-    .logo-img { height: 50px; object-fit: contain; margin-bottom: 5px; display: block; }
+    /* LOGO PLACEHOLDER - VISIBLE IN VIEWER */
+    .logo-img { 
+        height: 50px; 
+        width: auto; 
+        object-fit: contain; 
+        margin-bottom: 10px; 
+        display: block; 
+    }
 
     .report-title { font-family: 'Bitter', serif; font-size: 22px; color: #000; }
-    .report-meta { font-size: 11px; text-align: right; line-height: 1.4; color: #444; }
+    .report-meta { font-size: 11px; text-align: right; line-height: 1.5; color: #444; }
 
     /* SECTIONS */
     .intro-box {
         background: #f8f9fa;
         padding: 15px;
-        border-left: 4px solid var(--primary);
+        border-left: 5px solid var(--primary);
         font-size: 11px;
         line-height: 1.5;
         margin-bottom: 20px;
@@ -174,7 +179,7 @@
         border: 1px solid #ddd;
         background: #fafafa;
         padding: 15px;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         border-radius: 4px;
         flex: 0 0 auto;
     }
@@ -189,7 +194,7 @@
     
     .domain-title-bar {
         color: white;
-        padding: 6px 10px;
+        padding: 8px 10px;
         font-weight: bold;
         font-size: 14px;
         border-radius: 4px 4px 0 0;
@@ -200,12 +205,12 @@
     .report-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 10px;
+        font-size: 11px;
         border: 1px solid #ccc;
     }
-    .report-table th { background: #eee; padding: 6px; text-align: left; border: 1px solid #ccc; }
-    .report-table td { padding: 6px; border: 1px solid #ccc; vertical-align: top; }
-    .score-cell { text-align: center; font-weight: bold; width: 35px; }
+    .report-table th { background: #eee; padding: 8px; text-align: left; border: 1px solid #ccc; }
+    .report-table td { padding: 8px; border: 1px solid #ccc; vertical-align: top; }
+    .score-cell { text-align: center; font-weight: bold; width: 40px; }
     
     /* Dynamic Domain Colors */
     .bg-A { background-color: var(--col-A); }
@@ -353,4 +358,303 @@ const analysisData = {
     },
     C: { 
         low: ["Struggled to distinguish 'my turn' vs 'your turn'.", "Play was parallel/isolated; ignored social cues.", "Communication was purely functional (needs-based)."],
-        mid: ["Turn-taking was polite but rule-bound.", "Waited for permission to
+        mid: ["Turn-taking was polite but rule-bound.", "Waited for permission to enter the shared space.", "Social engagement maintained through compliance."],
+        high: ["Anticipated the other's entry naturally (I-YOU framing).", "Collaborated to build a shared creative product.", "Communication served to build connection."]
+    },
+    D: { 
+        low: ["Interaction with medium was mechanical/repetitive.", "Physical presence appeared rigid or static.", "Limited to a single dynamic level (e.g., always loud)."],
+        mid: ["Used tools correctly but relied on instruction.", "Adopted a 'learning' posture; focused on correctness.", "Varied dynamics only when directed."],
+        high: ["Adapted technical use of medium intuitively.", "Physical embodiment was congruent with session energy.", "Utilized full expressive range."]
+    },
+    E: { 
+        low: ["Recall was vague; unable to link past to present.", "Gave up immediately when problem-solving failed.", "Sequencing was chaotic or stuck in a loop."],
+        mid: ["Listed events accurately but lacked personal meaning.", "Relied on safe, standard structures.", "Solved problems by seeking adult help."],
+        high: ["Derived causal connections between action and outcome.", "Sequencing was logical and creative.", "Experimented independently to overcome obstacles."]
+    }
+};
+
+/* --------------------------------------------------
+   BUILDER & LOGIC (RUNS IMMEDIATELY)
+-------------------------------------------------- */
+(function initApp() {
+    const editorRoot = document.getElementById('domains-editor');
+    const previewRoot = document.getElementById('domains-preview');
+
+    if(!editorRoot || !previewRoot) {
+        console.error("Critical Error: DOM elements not found.");
+        return;
+    }
+
+    Object.keys(domains).forEach(key => {
+        const d = domains[key];
+        
+        // 1. EDITOR CARD
+        const section = document.createElement('div');
+        section.className = 'card';
+        section.innerHTML = `<div class="domain-header-edit" style="color:${d.color}">${d.title}</div>`;
+        
+        d.criteria.forEach((cLabel, idx) => {
+            const cid = `${key}${idx+1}`; // e.g., A1, A2
+            section.innerHTML += `
+                <div style="margin-bottom: 15px;">
+                    <label>${cLabel}</label>
+                    <div class="slider-row">
+                        <div class="slider-group">
+                            <span style="font-size:0.7rem">Engagement: <b id="val-eng-${cid}">0</b></span>
+                            <input type="range" class="range-input" id="eng-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}')">
+                        </div>
+                        <div class="slider-group">
+                            <span style="font-size:0.7rem">Flexibility: <b id="val-flex-${cid}">0</b></span>
+                            <input type="range" class="range-input" id="flex-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}')">
+                        </div>
+                    </div>
+                    <div class="band-indicator band-1" id="band-${cid}">0 - Stuck</div>
+                    
+                    <div style="margin-top:5px;">
+                        <select id="pick-${cid}" onchange="window.insertText('${cid}')" style="font-size:0.8rem; color:#555; margin-bottom:3px;">
+                            <option value="">✨ Select phrase...</option>
+                        </select>
+                        <textarea id="txt-${cid}" placeholder="Analysis..." oninput="window.updatePreview()"></textarea>
+                    </div>
+                </div>
+            `;
+        });
+        
+        section.innerHTML += `<label>Overall ${key} Summary</label><textarea id="sum-${key}" oninput="window.updatePreview()"></textarea>`;
+        editorRoot.appendChild(section);
+
+        // 2. PREVIEW SECTION
+        const prevDiv = document.createElement('div');
+        prevDiv.className = 'domain-section';
+        const bgClass = `bg-${key}`;
+        
+        prevDiv.innerHTML = `
+            <div class="domain-title-bar ${bgClass}">
+                <span>${d.title}</span>
+            </div>
+            <table class="report-table">
+                <thead>
+                    <tr><th width="35%">Criteria</th><th width="8%">Eng.</th><th width="8%">Flex.</th><th>Analysis</th></tr>
+                </thead>
+                <tbody id="tbody-${key}"></tbody>
+            </table>
+            <div id="prev-sum-${key}" style="font-size:11px; padding:10px; background:#fafafa; border:1px solid #ccc; border-top:0; font-style:italic;"></div>
+        `;
+        previewRoot.appendChild(prevDiv);
+    });
+    
+    // Trigger Initial Update
+    setTimeout(window.updatePreview, 100);
+
+})();
+
+// GLOBAL FUNCTIONS (Attached to window so HTML triggers can see them)
+window.handleInput = function(cid, domainKey) {
+    const eng = document.getElementById(`eng-${cid}`).value;
+    const flex = document.getElementById(`flex-${cid}`).value;
+    
+    document.getElementById(`val-eng-${cid}`).innerText = eng;
+    document.getElementById(`val-flex-${cid}`).innerText = flex;
+
+    // Update Band
+    const bandEl = document.getElementById(`band-${cid}`);
+    let bandType = "low";
+    
+    if (flex <= 3) {
+        bandEl.className = "band-indicator band-1";
+        bandEl.innerText = `${flex} - Rigid/Stuck`;
+        bandType = "low";
+    } else if (flex <= 6) {
+        bandEl.className = "band-indicator band-2";
+        bandEl.innerText = `${flex} - Pliance/Rule`;
+        bandType = "mid";
+    } else {
+        bandEl.className = "band-indicator band-3";
+        bandEl.innerText = `${flex} - Flow/Adaptive`;
+        bandType = "high";
+    }
+
+    // Update Dropdown
+    const picker = document.getElementById(`pick-${cid}`);
+    const phrases = analysisData[domainKey][bandType];
+    picker.innerHTML = `<option value="">✨ Select ${domainKey} phrase...</option>`;
+    phrases.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.innerText = p;
+        picker.appendChild(opt);
+    });
+
+    window.updatePreview();
+    window.updateChart();
+};
+
+window.insertText = function(cid) {
+    const picker = document.getElementById(`pick-${cid}`);
+    const box = document.getElementById(`txt-${cid}`);
+    if (picker.value) {
+        box.value += (box.value.length > 0 ? " " : "") + picker.value;
+        window.updatePreview();
+    }
+    picker.value = "";
+};
+
+window.updatePreview = function() {
+    // Header Info
+    document.getElementById('prev-name').innerText = document.getElementById('input-name').value || "Client Name";
+    document.getElementById('page2-meta').innerText = document.getElementById('input-name').value || "Client Name";
+    document.getElementById('prev-date').innerText = document.getElementById('input-date').value || "Date";
+    document.getElementById('prev-assessor').innerText = document.getElementById('input-assessor').value || "Assessor";
+    document.getElementById('prev-service').innerText = document.getElementById('input-service').value || "Service";
+
+    // Formulation
+    document.getElementById('prev-summary').innerText = document.getElementById('input-summary').value || "No summary provided.";
+    
+    // Aims
+    const aimsTxt = document.getElementById('input-aims').value;
+    const aimsDiv = document.getElementById('prev-aims');
+    aimsDiv.innerHTML = "";
+    if (aimsTxt) {
+        const ul = document.createElement('ul');
+        ul.style.margin = "0"; ul.style.paddingLeft = "15px";
+        aimsTxt.split('\n').forEach(line => {
+            if(line.trim()) ul.innerHTML += `<li>${line}</li>`;
+        });
+        aimsDiv.appendChild(ul);
+    }
+
+    // Tables
+    Object.keys(domains).forEach(key => {
+        const tbody = document.getElementById(`tbody-${key}`);
+        if(tbody) {
+            tbody.innerHTML = "";
+            domains[key].criteria.forEach((cLabel, idx) => {
+                const cid = `${key}${idx+1}`;
+                const eng = document.getElementById(`eng-${cid}`).value;
+                const flex = document.getElementById(`flex-${cid}`).value;
+                const txt = document.getElementById(`txt-${cid}`).value;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${cLabel}</td>
+                        <td class="score-cell" style="background:${eng > 0 ? '#eee' : '#fff'}">${eng}</td>
+                        <td class="score-cell" style="background:${getFlexColor(flex)}">${flex}</td>
+                        <td>${txt}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById(`prev-sum-${key}`).innerText = document.getElementById(`sum-${key}`).value;
+        }
+    });
+    
+    window.updateChart();
+};
+
+window.getFlexColor = function(val) {
+    if (val == 0) return "#fff";
+    if (val <= 3) return "#fadbd8"; 
+    if (val <= 6) return "#fdebd0"; 
+    return "#d5f5e3"; 
+};
+
+// CHART & COLLISION
+window.updateChart = function() {
+    const container = document.getElementById('quadrant-chart');
+    if(!container) return;
+    container.innerHTML = ""; 
+    
+    const width = 400, height = 400, margin = 30;
+    const svg = d3.select("#quadrant-chart").append("svg")
+        .attr("width", width).attr("height", height)
+        .attr("viewBox", `0 0 ${width} ${height}`);
+
+    // Grid
+    const g = svg.append("g").attr("transform", `translate(${margin},${margin})`);
+    const innerW = width - margin*2;
+    const innerH = height - margin*2;
+    
+    const x = d3.scaleLinear().domain([0, 10]).range([0, innerW]);
+    const y = d3.scaleLinear().domain([0, 10]).range([innerH, 0]);
+
+    g.append("rect").attr("width", innerW).attr("height", innerH).attr("fill", "#fff").attr("stroke", "#333");
+    g.append("line").attr("x1", innerW/2).attr("y1", 0).attr("x2", innerW/2).attr("y2", innerH).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
+    g.append("line").attr("x1", 0).attr("y1", innerH/2).attr("x2", innerW).attr("y2", innerH/2).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
+
+    g.append("text").attr("x", innerW-5).attr("y", innerH/2 - 5).text("Flow").attr("text-anchor", "end").style("font-size", "10px");
+    g.append("text").attr("x", 5).attr("y", innerH/2 - 5).text("Rigid").attr("text-anchor", "start").style("font-size", "10px");
+    g.append("text").attr("x", innerW/2 + 5).attr("y", 10).text("High Eng.").attr("text-anchor", "start").style("font-size", "10px");
+    g.append("text").attr("x", innerW/2 + 5).attr("y", innerH - 5).text("Low Eng.").attr("text-anchor", "start").style("font-size", "10px");
+
+    // Data
+    let points = [];
+    Object.keys(domains).forEach(key => {
+        domains[key].criteria.forEach((_, idx) => {
+            const cid = `${key}${idx+1}`;
+            const eng = +document.getElementById(`eng-${cid}`).value;
+            const flex = +document.getElementById(`flex-${cid}`).value;
+            if (eng > 0 || flex > 0) {
+                points.push({ id: cid, eng: eng, flex: flex, color: domains[key].color });
+            }
+        });
+    });
+
+    // Collision Logic
+    const grouped = {};
+    points.forEach(p => {
+        const key = `${p.flex}-${p.eng}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(p);
+    });
+
+    let finalData = [];
+    Object.values(grouped).forEach(group => {
+        if (group.length === 1) {
+            group[0].dx = 0; group[0].dy = 0;
+            finalData.push(group[0]);
+        } else {
+            const radius = 12; 
+            const step = (2 * Math.PI) / group.length;
+            group.forEach((p, i) => {
+                p.dx = Math.cos(step * i) * radius;
+                p.dy = Math.sin(step * i) * radius;
+                finalData.push(p);
+            });
+        }
+    });
+
+    // Draw
+    g.selectAll("circle")
+        .data(finalData).enter().append("circle")
+        .attr("cx", d => x(d.flex) + d.dx)
+        .attr("cy", d => y(d.eng) + d.dy)
+        .attr("r", 6)
+        .attr("fill", d => d.color)
+        .attr("stroke", "#fff").attr("stroke-width", 1);
+
+    g.selectAll(".label")
+        .data(finalData).enter().append("text")
+        .attr("x", d => x(d.flex) + d.dx)
+        .attr("y", d => y(d.eng) + d.dy - 8)
+        .text(d => d.id)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "9px")
+        .attr("font-weight", "bold")
+        .attr("fill", "#333");
+};
+
+window.clearAllData = function() {
+    if(confirm("Clear all data?")) {
+        document.querySelectorAll('input').forEach(el => el.value = '');
+        document.querySelectorAll('textarea').forEach(el => el.value = '');
+        document.querySelectorAll('input[type="range"]').forEach(el => el.value = 0);
+        document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+        
+        Object.keys(domains).forEach(k => {
+            domains[k].criteria.forEach((_, i) => window.handleInput(`${k}${i+1}`, k));
+        });
+        window.updatePreview();
+    }
+};
+</script>
+</body>
+</html>
