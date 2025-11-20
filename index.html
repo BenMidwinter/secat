@@ -10,7 +10,7 @@
 <style>
     :root {
         --primary: #2c3e50;
-        --bg: #f4f7f6;
+        --bg: #f0f2f5;
         --border: #ccc;
         /* Domain Colors */
         --col-A: #e74c3c; 
@@ -39,7 +39,7 @@
     /* LEFT: EDITOR (Scrollable) */
     .editor-panel {
         width: 35%;
-        min-width: 400px;
+        min-width: 420px;
         background: #fff;
         border-right: 1px solid #ccc;
         overflow-y: auto;
@@ -79,6 +79,15 @@
         font-size: 0.9rem;
     }
     textarea { resize: vertical; min-height: 50px; }
+    
+    /* Distinct style for the Auto-Analysis box to show it's system-generated */
+    .auto-analysis {
+        background-color: #f9f9f9;
+        border-left: 3px solid var(--primary);
+        font-style: italic;
+        font-size: 0.85rem;
+        color: #555;
+    }
 
     .card {
         background: #fff;
@@ -106,6 +115,7 @@
         font-size: 0.7rem; font-weight: bold; padding: 2px 6px;
         border-radius: 4px; color: white; background: #ccc;
         display: inline-block; width: 100%; text-align: center;
+        margin-bottom: 8px;
     }
     .band-1 { background: #c0392b; } /* Stuck */
     .band-2 { background: #f39c12; } /* Pliance */
@@ -124,7 +134,7 @@
     -------------------------------------------------- */
     .a4-page {
         width: 210mm;
-        min-height: 297mm;
+        min-height: 296mm; /* Approx A4 height */
         background: white;
         padding: 15mm 15mm; 
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -132,6 +142,7 @@
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
+        overflow: hidden; /* Hide overflow in preview, print handles break */
     }
 
     /* HEADER */
@@ -142,10 +153,10 @@
         border-bottom: 2px solid #333;
         padding-bottom: 10px;
         margin-bottom: 20px;
+        flex: 0 0 auto;
     }
     .header-left { display: flex; flex-direction: column; gap: 5px; }
     
-    /* LOGO PLACEHOLDER - VISIBLE IN VIEWER */
     .logo-img { 
         height: 50px; 
         width: auto; 
@@ -164,17 +175,19 @@
         border-left: 5px solid var(--primary);
         font-size: 11px;
         line-height: 1.5;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         color: #444;
+        flex: 0 0 auto;
     }
 
     .quadrant-wrapper {
         flex: 0 0 auto;
         display: flex;
         justify-content: center;
-        margin: 10px 0 20px 0;
+        margin: 0 0 15px 0;
     }
 
+    /* SUMMARY & AIMS BLOCKS */
     .summary-block {
         border: 1px solid #ddd;
         background: #fafafa;
@@ -188,7 +201,7 @@
 
     /* DOMAINS ON PAGE 2 */
     .domain-section {
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         break-inside: avoid; /* Keep table together on print */
     }
     
@@ -205,7 +218,7 @@
     .report-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 11px;
+        font-size: 10px;
         border: 1px solid #ccc;
     }
     .report-table th { background: #eee; padding: 8px; text-align: left; border: 1px solid #ccc; }
@@ -238,6 +251,7 @@
             width: 100%; margin: 0; padding: 15mm; 
             box-shadow: none; page-break-after: always;
             min-height: 0; 
+            display: block; /* Flex causes print issues sometimes */
         }
         .a4-page:last-child { page-break-after: auto; }
         button { display: none; }
@@ -267,9 +281,9 @@
         <div class="card">
             <h2>2. Formulation</h2>
             <label>Executive Summary</label>
-            <textarea id="input-summary" oninput="updatePreview()"></textarea>
+            <textarea id="input-summary" oninput="updatePreview()" placeholder="Type the overall summary here..."></textarea>
             <label style="margin-top:10px">Future Aims (One per line)</label>
-            <textarea id="input-aims" oninput="updatePreview()"></textarea>
+            <textarea id="input-aims" oninput="updatePreview()" placeholder="1. Aim one..."></textarea>
         </div>
 
         <div id="domains-editor"></div>
@@ -277,7 +291,7 @@
 
     <div class="preview-panel">
         
-        <div class="a4-page">
+        <div class="a4-page" id="page-1">
             <div class="report-header">
                 <div class="header-left">
                     <img src="https://via.placeholder.com/150x50?text=YOUR+LOGO+HERE" class="logo-img" alt="Logo">
@@ -302,12 +316,12 @@
 
             <div class="quadrant-wrapper" id="quadrant-chart"></div>
 
-            <div class="summary-block" style="flex-grow: 1;">
+            <div class="summary-block" id="summary-container">
                 <h4>Executive Summary</h4>
                 <div id="prev-summary" class="summary-text">No summary provided.</div>
             </div>
 
-            <div class="summary-block">
+            <div class="summary-block" id="aims-container">
                 <h4>Future Aims</h4>
                 <div id="prev-aims" class="summary-text"></div>
             </div>
@@ -315,7 +329,7 @@
             <div class="footer">SECAT© 2025. Summary of Engagement in Creative Arts Therapy.</div>
         </div>
 
-        <div class="a4-page">
+        <div class="a4-page" id="page-2">
             <div class="report-header">
                 <div class="header-left">
                     <img src="https://via.placeholder.com/150x50?text=YOUR+LOGO+HERE" class="logo-img" alt="Logo">
@@ -323,6 +337,8 @@
                 </div>
                 <div class="report-meta" id="page2-meta">Client Name</div>
             </div>
+            
+            <div id="p2-overflow-target"></div>
 
             <div id="domains-preview">
                 </div>
@@ -344,46 +360,58 @@ const domains = {
     E: { title: "E: Cognitive Skills", color: "#2980b9", criteria: ["E1. Recalling Moments", "E2. Sequencing Ideas", "E3. Problem Solving"] }
 };
 
-// DOMAIN-SPECIFIC Analysis Phrases
-const analysisData = {
-    A: { 
-        low: ["Engagement limited by rigid adherence to a single idea.", "Withdrew when musical demand increased (Avoidance).", "Play was disconnected from the shared pulse."],
-        mid: ["Initiated only when explicitly prompted (Compliance).", "Persisted but struggled to adapt to tempo changes.", "Attended to the instrument mechanics rather than the shared music."],
-        high: ["Seamlessly adapted play to match context changes.", "Initiated new creative ideas spontaneously.", "Demonstrated 'flow' and psychological flexibility in play."]
-    },
-    B: { 
-        low: ["Affect was flat or incongruent with the activity.", "Used the medium to drown out/mask feelings.", "Struggled to tolerate silence or stillness."],
-        mid: ["Labelled emotions correctly but appeared detached.", "Expression felt performative or scripted.", "Regulated by strictly controlling the activity."],
-        high: ["Used the arts to safely hold difficult emotions.", "Demonstrated congruence between affect and activity.", "Shifted emotional state adaptively."]
-    },
-    C: { 
-        low: ["Struggled to distinguish 'my turn' vs 'your turn'.", "Play was parallel/isolated; ignored social cues.", "Communication was purely functional (needs-based)."],
-        mid: ["Turn-taking was polite but rule-bound.", "Waited for permission to enter the shared space.", "Social engagement maintained through compliance."],
-        high: ["Anticipated the other's entry naturally (I-YOU framing).", "Collaborated to build a shared creative product.", "Communication served to build connection."]
-    },
-    D: { 
-        low: ["Interaction with medium was mechanical/repetitive.", "Physical presence appeared rigid or static.", "Limited to a single dynamic level (e.g., always loud)."],
-        mid: ["Used tools correctly but relied on instruction.", "Adopted a 'learning' posture; focused on correctness.", "Varied dynamics only when directed."],
-        high: ["Adapted technical use of medium intuitively.", "Physical embodiment was congruent with session energy.", "Utilized full expressive range."]
-    },
-    E: { 
-        low: ["Recall was vague; unable to link past to present.", "Gave up immediately when problem-solving failed.", "Sequencing was chaotic or stuck in a loop."],
-        mid: ["Listed events accurately but lacked personal meaning.", "Relied on safe, standard structures.", "Solved problems by seeking adult help."],
-        high: ["Derived causal connections between action and outcome.", "Sequencing was logical and creative.", "Experimented independently to overcome obstacles."]
-    }
+// STRICT CRITERIA-MATCHED ANALYSIS (0=Low, 1=Mid, 2=High)
+const analysisMap = {
+    A: [
+        // A1
+        ["Engagement limited by rigid adherence to a single idea.", "Initiated only when explicitly prompted (Compliance).", "Initiated new creative ideas spontaneously (Flow)."],
+        // A2
+        ["Withdrew when musical demand increased (Avoidance).", "Persisted but struggled to adapt to tempo changes.", "Seamlessly adapted play to match context changes."],
+        // A3
+        ["Play was disconnected from the shared pulse.", "Attended to mechanics rather than the shared music.", "Demonstrated deep contact with the present moment."]
+    ],
+    B: [
+        // B1
+        ["Affect was flat or incongruent with activity.", "Labelled emotions correctly but appeared detached.", "Demonstrated congruence between affect and activity."],
+        // B2
+        ["Used the medium to drown out/mask feelings.", "Expression felt performative or scripted.", "Used the arts to safely hold difficult emotions."],
+        // B3
+        ["Struggled to tolerate silence or stillness.", "Regulated by strictly controlling the activity.", "Shifted emotional state adaptively."]
+    ],
+    C: [
+        // C1
+        ["Struggled to distinguish 'my turn' vs 'your turn'.", "Turn-taking was polite but rule-bound.", "Anticipated the other's entry naturally (I-YOU framing)."],
+        // C2
+        ["Play was parallel/isolated; ignored social cues.", "Waited for permission to enter the shared space.", "Collaborated to build a shared creative product."],
+        // C3
+        ["Communication was purely functional (needs-based).", "Social engagement maintained through compliance.", "Communication served to build connection."]
+    ],
+    D: [
+        // D1
+        ["Interaction with medium was mechanical/repetitive.", "Used tools correctly but relied on instruction.", "Adapted technical use of medium intuitively."],
+        // D2
+        ["Physical presence appeared rigid or static.", "Adopted a 'learning' posture; focused on correctness.", "Physical embodiment was congruent with session energy."],
+        // D3
+        ["Limited to a single dynamic level (e.g., always loud).", "Varied dynamics only when directed (Pliance).", "Utilized full expressive range."]
+    ],
+    E: [
+        // E1
+        ["Recall was vague; unable to link past to present.", "Listed events accurately but lacked personal meaning.", "Derived causal connections between action and outcome."],
+        // E2
+        ["Sequencing was chaotic or stuck in a loop.", "Relied on safe, standard structures.", "Sequencing was logical and creative."],
+        // E3
+        ["Gave up immediately when problem-solving failed.", "Solved problems by seeking adult help.", "Experimented independently to overcome obstacles."]
+    ]
 };
 
 /* --------------------------------------------------
-   BUILDER & LOGIC (RUNS IMMEDIATELY)
+   BUILDER & LOGIC
 -------------------------------------------------- */
 (function initApp() {
     const editorRoot = document.getElementById('domains-editor');
     const previewRoot = document.getElementById('domains-preview');
 
-    if(!editorRoot || !previewRoot) {
-        console.error("Critical Error: DOM elements not found.");
-        return;
-    }
+    if(!editorRoot || !previewRoot) { console.error("Critical Error: DOM elements not found."); return; }
 
     Object.keys(domains).forEach(key => {
         const d = domains[key];
@@ -394,27 +422,27 @@ const analysisData = {
         section.innerHTML = `<div class="domain-header-edit" style="color:${d.color}">${d.title}</div>`;
         
         d.criteria.forEach((cLabel, idx) => {
-            const cid = `${key}${idx+1}`; // e.g., A1, A2
+            const cid = `${key}${idx+1}`; // e.g., A1
             section.innerHTML += `
                 <div style="margin-bottom: 15px;">
                     <label>${cLabel}</label>
                     <div class="slider-row">
                         <div class="slider-group">
                             <span style="font-size:0.7rem">Engagement: <b id="val-eng-${cid}">0</b></span>
-                            <input type="range" class="range-input" id="eng-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}')">
+                            <input type="range" class="range-input" id="eng-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}', ${idx})">
                         </div>
                         <div class="slider-group">
                             <span style="font-size:0.7rem">Flexibility: <b id="val-flex-${cid}">0</b></span>
-                            <input type="range" class="range-input" id="flex-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}')">
+                            <input type="range" class="range-input" id="flex-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}', ${idx})">
                         </div>
                     </div>
                     <div class="band-indicator band-1" id="band-${cid}">0 - Stuck</div>
                     
                     <div style="margin-top:5px;">
-                        <select id="pick-${cid}" onchange="window.insertText('${cid}')" style="font-size:0.8rem; color:#555; margin-bottom:3px;">
-                            <option value="">✨ Select phrase...</option>
-                        </select>
-                        <textarea id="txt-${cid}" placeholder="Analysis..." oninput="window.updatePreview()"></textarea>
+                        <label style="font-size:0.7rem; color:#888;">Analysis (Auto-Generated)</label>
+                        <textarea id="auto-${cid}" class="auto-analysis" oninput="window.updatePreview()"></textarea>
+                        <label style="font-size:0.7rem; color:#888; margin-top:5px;">Additional Notes</label>
+                        <textarea id="note-${cid}" placeholder="Context..." oninput="window.updatePreview()"></textarea>
                     </div>
                 </div>
             `;
@@ -434,7 +462,7 @@ const analysisData = {
             </div>
             <table class="report-table">
                 <thead>
-                    <tr><th width="35%">Criteria</th><th width="8%">Eng.</th><th width="8%">Flex.</th><th>Analysis</th></tr>
+                    <tr><th width="35%">Criteria</th><th width="8%">Eng.</th><th width="8%">Flex.</th><th>Analysis & Notes</th></tr>
                 </thead>
                 <tbody id="tbody-${key}"></tbody>
             </table>
@@ -443,13 +471,11 @@ const analysisData = {
         previewRoot.appendChild(prevDiv);
     });
     
-    // Trigger Initial Update
     setTimeout(window.updatePreview, 100);
-
 })();
 
-// GLOBAL FUNCTIONS (Attached to window so HTML triggers can see them)
-window.handleInput = function(cid, domainKey) {
+// GLOBAL HANDLERS
+window.handleInput = function(cid, domainKey, cIdx) {
     const eng = document.getElementById(`eng-${cid}`).value;
     const flex = document.getElementById(`flex-${cid}`).value;
     
@@ -458,49 +484,34 @@ window.handleInput = function(cid, domainKey) {
 
     // Update Band
     const bandEl = document.getElementById(`band-${cid}`);
-    let bandType = "low";
+    let bandIdx = 0; // 0=Low, 1=Mid, 2=High
     
     if (flex <= 3) {
         bandEl.className = "band-indicator band-1";
         bandEl.innerText = `${flex} - Rigid/Stuck`;
-        bandType = "low";
+        bandIdx = 0;
     } else if (flex <= 6) {
         bandEl.className = "band-indicator band-2";
         bandEl.innerText = `${flex} - Pliance/Rule`;
-        bandType = "mid";
+        bandIdx = 1;
     } else {
         bandEl.className = "band-indicator band-3";
         bandEl.innerText = `${flex} - Flow/Adaptive`;
-        bandType = "high";
+        bandIdx = 2;
     }
 
-    // Update Dropdown
-    const picker = document.getElementById(`pick-${cid}`);
-    const phrases = analysisData[domainKey][bandType];
-    picker.innerHTML = `<option value="">✨ Select ${domainKey} phrase...</option>`;
-    phrases.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p;
-        opt.innerText = p;
-        picker.appendChild(opt);
-    });
+    // AUTO-POPULATE ANALYSIS
+    // Only if slider moved.
+    const phrase = analysisMap[domainKey][cIdx][bandIdx];
+    const autoBox = document.getElementById(`auto-${cid}`);
+    autoBox.value = phrase;
 
     window.updatePreview();
     window.updateChart();
 };
 
-window.insertText = function(cid) {
-    const picker = document.getElementById(`pick-${cid}`);
-    const box = document.getElementById(`txt-${cid}`);
-    if (picker.value) {
-        box.value += (box.value.length > 0 ? " " : "") + picker.value;
-        window.updatePreview();
-    }
-    picker.value = "";
-};
-
 window.updatePreview = function() {
-    // Header Info
+    // Headers
     document.getElementById('prev-name').innerText = document.getElementById('input-name').value || "Client Name";
     document.getElementById('page2-meta').innerText = document.getElementById('input-name').value || "Client Name";
     document.getElementById('prev-date').innerText = document.getElementById('input-date').value || "Date";
@@ -532,14 +543,19 @@ window.updatePreview = function() {
                 const cid = `${key}${idx+1}`;
                 const eng = document.getElementById(`eng-${cid}`).value;
                 const flex = document.getElementById(`flex-${cid}`).value;
-                const txt = document.getElementById(`txt-${cid}`).value;
+                const autoTxt = document.getElementById(`auto-${cid}`).value;
+                const noteTxt = document.getElementById(`note-${cid}`).value;
+                
+                // Combine texts for report
+                let combinedTxt = autoTxt;
+                if(noteTxt) combinedTxt += ` <br><em>Note: ${noteTxt}</em>`;
 
                 tbody.innerHTML += `
                     <tr>
                         <td>${cLabel}</td>
                         <td class="score-cell" style="background:${eng > 0 ? '#eee' : '#fff'}">${eng}</td>
                         <td class="score-cell" style="background:${getFlexColor(flex)}">${flex}</td>
-                        <td>${txt}</td>
+                        <td>${combinedTxt}</td>
                     </tr>
                 `;
             });
@@ -547,7 +563,25 @@ window.updatePreview = function() {
         }
     });
     
+    window.checkPagination();
     window.updateChart();
+};
+
+// PAGINATION LOGIC
+window.checkPagination = function() {
+    const page1 = document.getElementById('page-1');
+    const summaryBox = document.getElementById('summary-container');
+    const aimsBox = document.getElementById('aims-container');
+    const p2Target = document.getElementById('p2-overflow-target');
+    
+    // 1. Reset: Move aims back to P1 to measure
+    summaryBox.after(aimsBox);
+    
+    // 2. Check Height (Approx 1080px is safe for A4 minus margins)
+    if (page1.scrollHeight > 1080) {
+        // 3. Overflow detected: Move aims to P2
+        p2Target.appendChild(aimsBox);
+    }
 };
 
 window.getFlexColor = function(val) {
@@ -557,18 +591,17 @@ window.getFlexColor = function(val) {
     return "#d5f5e3"; 
 };
 
-// CHART & COLLISION
 window.updateChart = function() {
     const container = document.getElementById('quadrant-chart');
     if(!container) return;
     container.innerHTML = ""; 
     
-    const width = 400, height = 400, margin = 30;
+    // INCREASED MARGIN TO 60 TO PREVENT CLIPPING
+    const width = 400, height = 400, margin = 60;
     const svg = d3.select("#quadrant-chart").append("svg")
         .attr("width", width).attr("height", height)
         .attr("viewBox", `0 0 ${width} ${height}`);
 
-    // Grid
     const g = svg.append("g").attr("transform", `translate(${margin},${margin})`);
     const innerW = width - margin*2;
     const innerH = height - margin*2;
@@ -598,7 +631,6 @@ window.updateChart = function() {
         });
     });
 
-    // Collision Logic
     const grouped = {};
     points.forEach(p => {
         const key = `${p.flex}-${p.eng}`;
@@ -622,7 +654,6 @@ window.updateChart = function() {
         }
     });
 
-    // Draw
     g.selectAll("circle")
         .data(finalData).enter().append("circle")
         .attr("cx", d => x(d.flex) + d.dx)
@@ -647,10 +678,9 @@ window.clearAllData = function() {
         document.querySelectorAll('input').forEach(el => el.value = '');
         document.querySelectorAll('textarea').forEach(el => el.value = '');
         document.querySelectorAll('input[type="range"]').forEach(el => el.value = 0);
-        document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
         
         Object.keys(domains).forEach(k => {
-            domains[k].criteria.forEach((_, i) => window.handleInput(`${k}${i+1}`, k));
+            domains[k].criteria.forEach((_, i) => window.handleInput(`${k}${i+1}`, k, i));
         });
         window.updatePreview();
     }
