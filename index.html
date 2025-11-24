@@ -322,10 +322,10 @@
                     <div class="report-title">SECAT© Confidential Report</div>
                 </div>
                 <div class="report-meta">
-                    <span id="prev-name">Client Name</span><br>
-                    <span id="prev-date">Date</span><br>
-                    <span id="prev-assessor">Assessor</span><br>
-                    <span id="prev-service">Service</span>
+                    Client Name: <span id="prev-name">Client Name</span><br>
+                    Assessment Date: <span id="prev-date">Date</span><br>
+                    Assessor: <span id="prev-assessor">Assessor</span><br>
+                    Service: <span id="prev-service">Service</span>
                 </div>
             </div>
 
@@ -482,10 +482,10 @@ window.handleInput = function(cid, domainKey, cIdx) {
 };
 
 window.updatePreview = function() {
-    document.getElementById('prev-name').innerText = document.getElementById('input-name').value || "Client Name";
-    document.getElementById('prev-date').innerText = document.getElementById('input-date').value || "Date";
-    document.getElementById('prev-assessor').innerText = document.getElementById('input-assessor').value || "Assessor";
-    document.getElementById('prev-service').innerText = document.getElementById('input-service').value || "Service";
+    document.getElementById('prev-name').innerText = "Client Name: " + (document.getElementById('input-name').value || "Client Name");
+    document.getElementById('prev-date').innerText = "Assessment Date: " + (document.getElementById('input-date').value || "Date");
+    document.getElementById('prev-assessor').innerText = "Assessor: " + (document.getElementById('input-assessor').value || "Assessor");
+    document.getElementById('prev-service').innerText = "Service: " + (document.getElementById('input-service').value || "Service");
 
     document.getElementById('prev-summary').innerText = document.getElementById('input-summary').value || "No summary provided.";
     
