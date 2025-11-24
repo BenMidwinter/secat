@@ -5,19 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECAT© - Summary of Engagement in Creative Arts Therapy</title>
+    
     <link rel="icon" type="image/png" href="favicon.jpg">
+    
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Bitter:wght@700&display=swap" rel="stylesheet">
-
-<script>
-    // SECURITY / REDIRECT LOGIC
-    const redirectUrl = "https://www.secat.app/costs"; 
-    const mySecret = "F!r3F10W3r"; 
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("access") !== mySecret) {
-       window.location.href = redirectUrl;
-    }
-</script>
 
 <style>
     :root {
@@ -67,7 +59,7 @@
         padding: 40px;
         display: flex;
         justify-content: center;
-        align-items: flex-start; /* Align to top so it grows down */
+        align-items: flex-start;
     }
 
     /* CONTINUOUS SHEET */
@@ -78,10 +70,13 @@
         padding: 20mm; 
         box-shadow: 0 0 20px rgba(0,0,0,0.5);
         box-sizing: border-box;
+        
+        /* FORCE VERTICAL STACKING */
         display: flex;
         flex-direction: column;
         gap: 20px;
-        margin-bottom: 40px; /* Space at bottom of scroll */
+        
+        margin-bottom: 40px; 
         position: relative;
     }
 
@@ -122,7 +117,7 @@
     
     /* --- CUSTOM SLIDER STYLING --- */
     input[type=range] {
-        -webkit-appearance: none; /* Removes default webkit styles */
+        -webkit-appearance: none;
         width: 100%;
         background: transparent;
         margin: 5px 0;
@@ -147,7 +142,7 @@
         cursor: pointer;
         margin-top: -6px; /* Vertically center thumb on track */
         box-shadow: 0 1px 4px rgba(0,0,0,0.4);
-        border: 2px solid white; /* Adds a nice "target" look */
+        border: 2px solid white; 
     }
     input[type=range]:focus { outline: none; }
 
@@ -207,7 +202,9 @@
         margin-bottom: 20px;
     }
     .header-left { display: flex; flex-direction: column; gap: 5px; }
+    
     .logo-img { height: 50px; width: auto; object-fit: contain; margin-bottom: 10px; display: block; }
+    
     .report-title { font-family: 'Bitter', serif; font-size: 22px; color: #000; }
     .report-meta { font-size: 11px; text-align: right; line-height: 1.5; color: #444; }
 
@@ -345,10 +342,11 @@
     <div class="preview-panel">
         <div class="document-sheet">
             
-            <div class="header-left">
-    <img src="logo.jpg" class="logo-img" alt="SECAT Logo"> 
-    <div class="report-title">SECAT© Confidential Report</div>
-</div>
+            <div class="report-header">
+                <div class="header-left">
+                    <img src="logo.jpg" class="logo-img" alt="SECAT Logo">
+                    <div class="report-title">SECAT© Confidential Report</div>
+                </div>
                 <div class="report-meta">
                     Client Name: <span id="prev-name">....................</span><br>
                     Date of Birth: <span id="prev-dob">....................</span><br>
@@ -356,11 +354,9 @@
                     Assessor: <span id="prev-assessor">....................</span><br>
                     Service: <span id="prev-service">....................</span>
                 </div>
-            </div>
-
-            <div class="intro-box">
+            </div> <div class="intro-box">
                 <strong>What is SECAT©?</strong><br>
-                The Summary of Engagement in Creative Arts Therapy is a functional assessment tool grounded in Relational Frame Theory (RFT) designed to distinguish between what a client does (Topography) and how they relate to the context (Function).  By separating Engagement (observable participation and skill) from Relational Flexibility (adaptive responsiveness and psychological connection), SECAT provides a nuanced formulation that differentiates genuine therapeutic 'flow' from rigid compliance or anxiety-driven avoidance.  Applicable across all creative modalities, this dual-axis approach enables the Multi-Disciplinary Team to identify hidden barriers to progress and set precise, functionally-driven aims that target the underlying mechanisms of change rather than just surface-level behaviours. 
+                The Summary of Engagement in Creative Arts Therapy is a functional assessment tool grounded in Relational Frame Theory (RFT) designed to distinguish between what a client does (Topography) and how they relate to the context (Function).  By separating Engagement (observable participation and skill) from Relational Flexibility (adaptive responsiveness and psychological connection), SECAT provides a nuanced formulation that differentiates genuine therapeutic 'flow' from rigid compliance or anxiety-driven avoidance.
                 <br><br>
                 <strong>Understanding the Graph:</strong><br>
                 • <strong>X-Axis (Flexibility):</strong> Measures adaptability. 0-3 = Rigid/Stuck. 4-6 = Rule-Following/Compliant. 7-10 = Adaptive Flow.<br>
@@ -512,13 +508,13 @@ window.handleInput = function(cid, domainKey, cIdx) {
     if (flex === -1) {
         // Case: Not Assessed
         bandEl.className = "band-indicator";
-        bandEl.style.background = "#eee"; // Set inline grey
+        bandEl.style.background = "#eee"; 
         bandEl.style.color = "#999";
         bandEl.innerText = "Not Assessed";
         document.getElementById(`auto-${cid}`).value = ""; 
     } else {
         // Case: Active Score
-        bandEl.style.background = ""; // Remove inline style so CSS class works
+        bandEl.style.background = ""; // Reset inline so CSS classes work
         bandEl.style.color = "white";
 
         if (flex <= 3) { 
@@ -535,11 +531,9 @@ window.handleInput = function(cid, domainKey, cIdx) {
             bandIdx = 2; 
         }
         
-        // Update text only if meaningful change or first interaction
+        // Update analysis text
         const phrase = analysisMap[domainKey][cIdx][bandIdx];
-        const box = document.getElementById(`auto-${cid}`);
-        // Optional: you can check if box.value is empty before overwriting if you want
-        box.value = phrase;
+        document.getElementById(`auto-${cid}`).value = phrase;
     }
 
     window.updatePreview();
@@ -616,7 +610,6 @@ window.updateChart = function() {
     if(!container) return;
     container.innerHTML = ""; 
     
-    // CHART CONFIG
     const width = 500, height = 500, margin = 60;
     const svg = d3.select("#quadrant-chart").append("svg").attr("width", width).attr("height", height).attr("viewBox", `0 0 ${width} ${height}`);
     const g = svg.append("g").attr("transform", `translate(${margin},${margin})`);
@@ -626,11 +619,10 @@ window.updateChart = function() {
     const x = d3.scaleLinear().domain([-2, 12]).range([0, innerW]);
     const y = d3.scaleLinear().domain([-2, 12]).range([innerH, 0]); 
 
-    // CROSSHAIRS
+    // Grid/Axis
     g.append("line").attr("x1", x(5)).attr("y1", y(-2)).attr("x2", x(5)).attr("y2", y(12)).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
     g.append("line").attr("x1", x(-2)).attr("y1", y(5)).attr("x2", x(12)).attr("y2", y(5)).attr("stroke", "#ccc").attr("stroke-dasharray", "4");
 
-    // LABELS
     g.append("text").attr("x", x(5)).attr("y", y(12)).text("HIGH ENGAGEMENT").attr("text-anchor", "middle").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
     g.append("text").attr("x", x(5)).attr("y", y(-2)+8).text("LOW ENGAGEMENT").attr("text-anchor", "middle").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
     g.append("text").attr("x", x(-2)).attr("y", y(5)+3).text("RIGID").attr("text-anchor", "start").style("font-size", "9px").style("fill", "#555").style("font-weight","bold");
@@ -641,7 +633,7 @@ window.updateChart = function() {
     g.append("text").attr("x", x(-1.5)).attr("y", y(-1.5)).text("AVOIDANT").attr("text-anchor", "start").style("font-size", "10px").style("fill", "#7f8c8d").style("font-weight", "bold");
     g.append("text").attr("x", x(11.5)).attr("y", y(-1.5)).text("OBSERVER").attr("text-anchor", "end").style("font-size", "10px").style("fill", "#2980b9").style("font-weight", "bold");
 
-    // DATA GATHERING
+    // Data Gathering
     let points = [];
     Object.keys(domains).forEach(key => {
         domains[key].criteria.forEach((_, idx) => {
@@ -656,7 +648,7 @@ window.updateChart = function() {
         });
     });
 
-    // GROUPING (Handling Overlaps)
+    // Grouping
     const grouped = {};
     points.forEach(p => {
         const key = `${p.flex}-${p.eng}`;
@@ -680,12 +672,11 @@ window.updateChart = function() {
         }
     });
 
-    // DRAW CIRCLES
+    // Drawing
     g.selectAll("circle").data(finalData).enter().append("circle")
         .attr("cx", d => x(d.flex) + d.dx).attr("cy", d => y(d.eng) + d.dy)
         .attr("r", 6).attr("fill", d => d.color).attr("stroke", "#fff").attr("stroke-width", 1);
 
-    // DRAW LABELS
     g.selectAll(".label").data(finalData).enter().append("text")
         .attr("x", d => x(d.flex) + d.dx).attr("y", d => y(d.eng) + d.dy - 8)
         .text(d => d.id).attr("text-anchor", "middle").attr("font-size", "9px").attr("font-weight", "bold").attr("fill", "#333");
@@ -694,15 +685,10 @@ window.updateChart = function() {
 window.clearAllData = function() {
     if(confirm("Clear all data?")) {
         document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
-        
-        // Reset Sliders to -1 (Not Assessed)
         document.querySelectorAll('input[type="range"]').forEach(el => el.value = -1);
-        
-        // Trigger updates to reset colors/text
         Object.keys(domains).forEach(k => { 
             domains[k].criteria.forEach((_, i) => window.handleInput(`${k}${i+1}`, k, i)); 
         });
-        
         window.updatePreview();
     }
 };
