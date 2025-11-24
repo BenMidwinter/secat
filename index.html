@@ -295,22 +295,23 @@
         </div>
 
         <div class="card">
-            <h2>1. Biographical Info</h2>
+            <h2>Biographical Info</h2>
             <div class="form-group"><label>Client Name</label><input type="text" id="input-name" oninput="updatePreview()"></div>
+            <div class="form-group"><label>Date of Birth</label><input type="date" id="input-dob" oninput="updatePreview()"></div>
             <div class="form-group"><label>Date of Assessment</label><input type="date" id="input-date" oninput="updatePreview()"></div>
             <div class="form-group"><label>Assessor</label><input type="text" id="input-assessor" oninput="updatePreview()"></div>
             <div class="form-group"><label>Service / School</label><input type="text" id="input-service" oninput="updatePreview()"></div>
         </div>
 
+        <div id="domains-editor"></div>
+        
         <div class="card">
-            <h2>2. Formulation</h2>
+            <h2>Formulation</h2>
             <label>Executive Summary</label>
             <textarea id="input-summary" oninput="updatePreview()" placeholder="Type the overall summary here..."></textarea>
             <label style="margin-top:10px">Future Aims (One per line)</label>
             <textarea id="input-aims" oninput="updatePreview()" placeholder="1. Aim one..."></textarea>
         </div>
-
-        <div id="domains-editor"></div>
     </div>
 
     <div class="preview-panel">
@@ -323,6 +324,7 @@
                 </div>
                 <div class="report-meta">
                     Client Name: <span id="prev-name">Client Name</span><br>
+                    Date of Birth: <span id="prev-dob">Date of Birth</span><br>
                     Assessment Date: <span id="prev-date">Date</span><br>
                     Assessor: <span id="prev-assessor">Assessor</span><br>
                     Service: <span id="prev-service">Service</span>
@@ -482,10 +484,11 @@ window.handleInput = function(cid, domainKey, cIdx) {
 };
 
 window.updatePreview = function() {
-    document.getElementById('prev-name').innerText = "Client Name: " + (document.getElementById('input-name').value || "Client Name");
-    document.getElementById('prev-date').innerText = "Assessment Date: " + (document.getElementById('input-date').value || "Date");
-    document.getElementById('prev-assessor').innerText = "Assessor: " + (document.getElementById('input-assessor').value || "Assessor");
-    document.getElementById('prev-service').innerText = "Service: " + (document.getElementById('input-service').value || "Service");
+    document.getElementById('prev-name').innerText = document.getElementById('input-name').value || "..........";
+    document.getElementById('prev-dob').innerText = document.getElementById('input-dob').value || "..........";
+    document.getElementById('prev-date').innerText = document.getElementById('input-date').value || "..........";
+    document.getElementById('prev-assessor').innerText = document.getElementById('input-assessor').value || "..........";
+    document.getElementById('prev-service').innerText = document.getElementById('input-service').value || "..........";
 
     document.getElementById('prev-summary').innerText = document.getElementById('input-summary').value || "No summary provided.";
     
