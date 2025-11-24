@@ -282,9 +282,20 @@
         text-align: center;
     }
 
-    /* PRINT */
+    /* PRINT MEDIA QUERY */
     @media print {
-        body { background: white; height: auto; overflow: visible; }
+        /* 1. HIDE BROWSER HEADERS/FOOTERS (The URL Fix) */
+        @page {
+            margin: 0; 
+        }
+
+        body { 
+            background: white; 
+            height: auto; 
+            overflow: visible; 
+            margin: 0; /* Reset body margin */
+        }
+
         .editor-panel { display: none; }
         .preview-panel { width: 100%; padding: 0; background: white; display: block; }
         
@@ -292,14 +303,17 @@
             width: 100%;
             min-height: 0;
             margin: 0;
-            padding: 0; 
+            padding: 20mm; /* We add the margin back here so text isn't on the edge */
             box-shadow: none;
             border: none;
         }
+        
         /* Hide visual helpers */
         .print-break { display: none; }
         
         button { display: none; }
+        #app-interface { display: block !important; }
+        #lock-screen { display: none !important; }
         .domain-section { page-break-inside: avoid; }
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
