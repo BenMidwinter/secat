@@ -5,17 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECAT© - Summary of Engagement in Creative Arts Therapy</title>
+    <link rel="icon" type="image/png" href="favicon.jpg">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Bitter:wght@700&display=swap" rel="stylesheet">
 
 <script>
     // SECURITY / REDIRECT LOGIC
-    // const redirectUrl = "https://www.secat.app/costs"; 
-    // const mySecret = "F!r3F10W3r"; 
-    // const params = new URLSearchParams(window.location.search);
-    // if (params.get("access") !== mySecret) {
-    //    window.location.href = redirectUrl;
-    // }
+    const redirectUrl = "https://www.secat.app/costs"; 
+    const mySecret = "F!r3F10W3r"; 
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("access") !== mySecret) {
+       window.location.href = redirectUrl;
+    }
 </script>
 
 <style>
@@ -344,10 +345,10 @@
     <div class="preview-panel">
         <div class="document-sheet">
             
-            <div class="report-header">
-                <div class="header-left">
-                    <div class="report-title">SECAT© Confidential Report</div>
-                </div>
+            <div class="header-left">
+    <img src="logo.jpg" class="logo-img" alt="SECAT Logo">
+    <div class="report-title">SECAT© Confidential Report</div>
+</div>
                 <div class="report-meta">
                     Client Name: <span id="prev-name">....................</span><br>
                     Date of Birth: <span id="prev-dob">....................</span><br>
