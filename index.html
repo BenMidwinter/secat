@@ -323,11 +323,11 @@
                     <div class="report-title">SECAT© Confidential Report</div>
                 </div>
                 <div class="report-meta">
-                    Client Name: <span id="prev-name">Client Name</span><br>
-                    Date of Birth: <span id="prev-dob">Date of Birth</span><br>
-                    Assessment Date: <span id="prev-date">Date</span><br>
-                    Assessor: <span id="prev-assessor">Assessor</span><br>
-                    Service: <span id="prev-service">Service</span>
+                    Client Name: <span id="prev-name">..........</span><br>
+                    Date of Birth: <span id="prev-dob">..........</span><br>
+                    Assessment Date: <span id="prev-date">..........</span><br>
+                    Assessor: <span id="prev-assessor">..........</span><br>
+                    Service: <span id="prev-service">..........</span>
                 </div>
             </div>
 
@@ -423,15 +423,16 @@ const analysisMap = {
                     <label>${cLabel}</label>
                     <div class="slider-row">
                         <div class="slider-group">
-                            <span style="font-size:0.7rem">Engagement: <b id="val-eng-${cid}">0</b></span>
-                            <input type="range" class="range-input" id="eng-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}', ${idx})">
+                            <span style="font-size:0.7rem">Engagement: <b id="val-eng-${cid}" style="color:#ccc">N/A</b></span>
+                            <input type="range" class="range-input" id="eng-${cid}" min="-1" max="10" value="-1" oninput="window.handleInput('${cid}', '${key}', ${idx})">
                         </div>
                         <div class="slider-group">
-                            <span style="font-size:0.7rem">Flexibility: <b id="val-flex-${cid}">0</b></span>
-                            <input type="range" class="range-input" id="flex-${cid}" min="0" max="10" value="0" oninput="window.handleInput('${cid}', '${key}', ${idx})">
+                            <span style="font-size:0.7rem">Flexibility: <b id="val-flex-${cid}" style="color:#ccc">N/A</b></span>
+                            <input type="range" class="range-input" id="flex-${cid}" min="-1" max="10" value="-1" oninput="window.handleInput('${cid}', '${key}', ${idx})">
                         </div>
                     </div>
-                    <div class="band-indicator band-1" id="band-${cid}">0 - Stuck</div>
+                    <div class="band-indicator" style="background:#eee; color:#999;" id="band-${cid}">Not Assessed</div>
+                    
                     <div style="margin-top:5px;">
                         <label style="font-size:0.7rem; color:#888;">Analysis</label>
                         <textarea id="auto-${cid}" class="auto-analysis" oninput="window.updatePreview()"></textarea>
@@ -462,22 +463,44 @@ const analysisMap = {
     
     setTimeout(window.updatePreview, 100);
 })();
-
 window.handleInput = function(cid, domainKey, cIdx) {
     const eng = document.getElementById(`eng-${cid}`).value;
     const flex = document.getElementById(`flex-${cid}`).value;
-    document.getElementById(`val-eng-${cid}`).innerText = eng;
-    document.getElementById(`val-flex-${cid}`).innerText = flex;
+    
+    // Update Number Display (Show "N/A" if -1, otherwise show number)
+    const engDisplay = document.getElementById(`val-eng-${cid}`);
+    const flexDisplay = document.getElementById(`val-flex-${cid}`);
+    
+    engDisplay.innerText = eng == -1 ? "N/A" : eng;
+    engDisplay.style.color = eng == -1 ? "#ccc" : "#000";
+    
+    flexDisplay.innerText = flex == -1 ? "N/A" : flex;
+    flexDisplay.style.color = flex == -1 ? "#ccc" : "#000";
 
+    // Update Band Indicator
     const bandEl = document.getElementById(`band-${cid}`);
     let bandIdx = 0;
-    if (flex <= 3) { bandEl.className = "band-indicator band-1"; bandEl.innerText = `${flex} - Rigid/Stuck`; bandIdx = 0; }
-    else if (flex <= 6) { bandEl.className = "band-indicator band-2"; bandEl.innerText = `${flex} - Pliance/Rule`; bandIdx = 1; }
-    else { bandEl.className = "band-indicator band-3"; bandEl.innerText = `${flex} - Flow/Adaptive`; bandIdx = 2; }
-
-    const phrase = analysisMap[domainKey][cIdx][bandIdx];
-    const autoBox = document.getElementById(`auto-${cid}`);
-    autoBox.value = phrase;
+    
+    if (flex == -1) {
+        // Case: Not Assessed
+        bandEl.className = "band-indicator";
+        bandEl.style.background = "#eee";
+        bandEl.style.color = "#999";
+        bandEl.innerText = "Not Assessed";
+        // Clear analysis text if not assessed
+        document.getElementById(`auto-${cid}`).value = ""; 
+    } else {
+        // Case: Active Score (0 to 10)
+        bandEl.style.color = "white";
+        if (flex <= 3) { bandEl.className = "band-indicator band-1"; bandEl.innerText = `${flex} - Rigid/Stuck`; bandIdx = 0; }
+        else if (flex <= 6) { bandEl.className = "band-indicator band-2"; bandEl.innerText = `${flex} - Pliance/Rule`; bandIdx = 1; }
+        else { bandEl.className = "band-indicator band-3"; bandEl.innerText = `${flex} - Flow/Adaptive`; bandIdx = 2; }
+        
+        // Only update text if it's currently empty or matches a preset
+        // This prevents overwriting custom edits, but ensures the phrase appears on first click
+        const phrase = analysisMap[domainKey][cIdx][bandIdx];
+        document.getElementById(`auto-${cid}`).value = phrase;
+    }
 
     window.updatePreview();
     window.updateChart();
@@ -506,16 +529,33 @@ window.updatePreview = function() {
         const tbody = document.getElementById(`tbody-${key}`);
         if(tbody) {
             tbody.innerHTML = "";
-            domains[key].criteria.forEach((cLabel, idx) => {
-                const cid = `${key}${idx+1}`;
-                const eng = document.getElementById(`eng-${cid}`).value;
-                const flex = document.getElementById(`flex-${cid}`).value;
-                const autoTxt = document.getElementById(`auto-${cid}`).value;
-                const noteTxt = document.getElementById(`note-${cid}`).value;
-                let combinedTxt = `<span>${autoTxt}</span>`;
-                if(noteTxt) combinedTxt += `<br><span style="color:#555; font-style:italic;">Note: ${noteTxt}</span>`;
-                tbody.innerHTML += `<tr><td>${cLabel}</td><td class="score-cell" style="background:${eng > 0 ? '#eee' : '#fff'}">${eng}</td><td class="score-cell" style="background:${getFlexColor(flex)}">${flex}</td><td>${combinedTxt}</td></tr>`;
-            });
+            // Inside window.updatePreview...
+    domains[key].criteria.forEach((cLabel, idx) => {
+    const cid = `${key}${idx+1}`;
+    const eng = document.getElementById(`eng-${cid}`).value;
+    const flex = document.getElementById(`flex-${cid}`).value;
+    
+    // VISUAL FIX: If value is -1, show "-" in the report table
+    const engTxt = eng == -1 ? "-" : eng;
+    const flexTxt = flex == -1 ? "-" : flex;
+    
+    const autoTxt = document.getElementById(`auto-${cid}`).value;
+    const noteTxt = document.getElementById(`note-${cid}`).value;
+    
+    // Only show the row if it has been assessed (value > -1) OR if there are notes written
+    // This keeps the report clean.
+    if(eng > -1 || flex > -1 || noteTxt.trim() !== "") {
+        let combinedTxt = `<span>${autoTxt}</span>`;
+        if(noteTxt) combinedTxt += `<br><span style="color:#555; font-style:italic;">Note: ${noteTxt}</span>`;
+        
+        tbody.innerHTML += `<tr>
+            <td>${cLabel}</td>
+            <td class="score-cell" style="background:${eng > 0 ? '#eee' : '#fff'}">${engTxt}</td>
+            <td class="score-cell" style="background:${getFlexColor(flex == -1 ? 0 : flex)}">${flexTxt}</td>
+            <td>${combinedTxt}</td>
+        </tr>`;
+    }
+});
             document.getElementById(`prev-sum-${key}`).innerText = document.getElementById(`sum-${key}`).value;
         }
     });
@@ -563,15 +603,19 @@ window.updateChart = function() {
 
     // DATA
     let points = [];
-    Object.keys(domains).forEach(key => {
-        domains[key].criteria.forEach((_, idx) => {
-            const cid = `${key}${idx+1}`;
-            const eng = +document.getElementById(`eng-${cid}`).value;
-            const flex = +document.getElementById(`flex-${cid}`).value;
-            if (eng > 0 || flex > 0) points.push({ id: cid, eng: eng, flex: flex, color: domains[key].color });
-        });
+Object.keys(domains).forEach(key => {
+    domains[key].criteria.forEach((_, idx) => {
+        const cid = `${key}${idx+1}`;
+        const eng = +document.getElementById(`eng-${cid}`).value;
+        const flex = +document.getElementById(`flex-${cid}`).value;
+        
+        // LOGIC CHANGE: Only plot if BOTH are greater than -1
+        // This allows 0,0 to be plotted, but ignores -1 (Not Assessed)
+        if (eng > -1 && flex > -1) {
+             points.push({ id: cid, eng: eng, flex: flex, color: domains[key].color });
+        }
     });
-
+});
     const grouped = {};
     points.forEach(p => {
         const key = `${p.flex}-${p.eng}`;
