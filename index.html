@@ -404,8 +404,8 @@
 
 <script>
 const domains = {
-    A: { title: "A: Engagement & Participation", color: "#e74c3c", criteria: ["A1. Initiating Play", "A2. Persisting/Adapting", "A3. Attending"] },
-    B: { title: "B: Emotional Expression", color: "#e67e22", criteria: ["B1. Expressing Emotions", "B2. Regulatory Use", "B3. Appropriateness"] },
+    A: { title: "A: Engagement & Participation", color: "#e74c3c", criteria: ["A1. Initiating Play", "A2. Persisting/Adapting", "A3. Orienting"] },
+    B: { title: "B: Emotional Expression", color: "#e67e22", criteria: ["B1. Emotional Granularity & Range", "B2. Regulation Skills", "B3. Congruence & Coherence"] },
     C: { title: "C: Social Interaction", color: "#f1c40f", criteria: ["C1. Turn-taking", "C2. Collaborating", "C3. Communication Mode"] },
     D: { title: "D: Interaction with Media", color: "#27ae60", criteria: ["D1. Control/Manipulation", "D2. Physical Presence", "D3. Expressive Range"] },
     E: { title: "E: Cognitive Skills", color: "#2980b9", criteria: ["E1. Recalling Moments", "E2. Sequencing Ideas", "E3. Problem Solving"] }
@@ -414,13 +414,13 @@ const domains = {
 const analysisMap = {
     A: [
         ["Engagement limited by rigid adherence to a single idea.", "Initiated only when explicitly prompted (Compliance).", "Initiated new creative ideas spontaneously (Flow)."],
-        ["Withdrew when musical demand increased (Avoidance).", "Persisted but struggled to adapt to changes.", "Seamlessly adapted play to match context changes."],
-        ["Play was disconnected from the shared pulse.", "Attended to mechanics rather than the shared music.", "Demonstrated deep contact with the present moment."]
+        ["Withdrew when creative demand increased (Avoidance).", "Persisted but struggled to adapt to changes.", "Seamlessly adapted play to match context changes."],
+        ["Focus appeared internal or disconnected; struggled to orient towards the shared creative space.", "Attention was fixed rigidly on the object/task; limited awareness of the therapist or shared cues.", "Demonstrated sustained joint attention; actively referenced the therapist within the creative play."]
     ],
     B: [
-        ["Affect was flat or incongruent with activity.", "Labelled emotions correctly but appeared detached.", "Demonstrated congruence between affect and activity."],
+        ["Emotional expression limited to one word answers, or the same answer, despite context.", "Identified primary emotions but struggled with mixed or complex states.", "Demonstrated high emotional granularity; could express nuanced, conflicting, or subtle feelings."],
         ["Used the medium to drown out/mask feelings.", "Expression felt performative or scripted.", "Used the arts to safely hold difficult emotions."],
-        ["Struggled to tolerate silence or stillness.", "Regulated by strictly controlling the activity.", "Shifted emotional state adaptively."]
+        ["Emotional expression appeared incongruent or masked.", "Expression felt 'performed' or socially scripted; maintained a safe emotional distance.", "Demonstrated high coherence between internal state and creative expression (Authenticity)."]
     ],
     C: [
         ["Struggled to distinguish 'my turn' vs 'your turn'.", "Turn-taking was polite but rule-bound.", "Anticipated the other's entry naturally (I-YOU framing)."],
@@ -429,7 +429,7 @@ const analysisMap = {
     ],
     D: [
         ["Interaction with medium was mechanical/repetitive.", "Used tools correctly but relied on instruction.", "Adapted technical use of medium intuitively."],
-        ["Physical presence appeared rigid or static.", "Adopted a 'learning' posture; focused on correctness.", "Physical embodiment was congruent with session energy."],
+        ["Physical presence appeared rigid or static, or avoided entirely.", "Adopted a 'learning' posture; focused on correctness.", "Physical embodiment was congruent with session energy."],
         ["Limited to a single dynamic level (e.g., always loud).", "Varied dynamics only when directed (Pliance).", "Utilized full expressive range."]
     ],
     E: [
