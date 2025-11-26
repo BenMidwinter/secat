@@ -282,28 +282,46 @@
         text-align: center;
     }
 
-    /* PRINT MEDIA QUERY */
+   /* PRINT MEDIA QUERY - FINAL FIXES */
     @media print {
-        /* 1. HIDE BROWSER HEADERS/FOOTERS (The URL Fix) */
+        /* 1. Hide Browser URL/Date but keep the paper size */
         @page {
-            margin: 0; 
+            margin: 0;
+            size: A4;
         }
 
         body { 
             background: white; 
             height: auto; 
-            overflow: visible; 
-            margin: 0; /* Reset body margin */
+            width: 100%;
+            margin: 0; 
+            padding: 0;
         }
 
+        /* 2. FONT FIX: Switch to standard fonts for print to fix the 'l' glitch */
+        body, input, textarea, .summary-text, .report-table {
+            font-family: Helvetica, Arial, sans-serif !important;
+        }
+        /* Keep the Titles looking fancy (Serif), but switch to Georgia (Safe) */
+        h1, h2, .report-title, .section-title {
+            font-family: Georgia, 'Times New Roman', serif !important;
+        }
+
+        /* Hide Editor */
         .editor-panel { display: none; }
-        .preview-panel { width: 100%; padding: 0; background: white; display: block; }
+        
+        /* 3. MARGIN FIX: Force the sheet to have padding since @page is 0 */
+        .preview-panel { 
+            width: 100%; 
+            padding: 0; 
+            display: block; 
+        }
         
         .document-sheet {
             width: 100%;
-            min-height: 0;
             margin: 0;
-            padding: 20mm; /* We add the margin back here so text isn't on the edge */
+            /* This 20mm padding creates your top/bottom/side margins */
+            padding: 20mm !important; 
             box-shadow: none;
             border: none;
         }
@@ -312,9 +330,9 @@
         .print-break { display: none; }
         
         button { display: none; }
-        #app-interface { display: block !important; }
-        #lock-screen { display: none !important; }
         .domain-section { page-break-inside: avoid; }
+        
+        /* Force Background Colors (Chrome/Safari requirement) */
         * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 </style>
