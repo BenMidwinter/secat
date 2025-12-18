@@ -296,16 +296,12 @@
         text-align: center;
     }
 
-   /* PRINT MEDIA QUERY - CORRECTED */
+   /* PRINT MEDIA QUERY - FINAL FIXES */
     @media print {
-        /* 1. PAPER SETUP */
-        /* We add Top/Bottom margins here so they repeat on EVERY page (not just page 1) */
+        /* 1. Hide Browser URL/Date but keep the paper size */
         @page {
+            margin: 0;
             size: A4;
-            margin-top: 15mm;     /* Gives you the header space on all pages */
-            margin-bottom: 15mm;  /* Gives you the footer space on all pages */
-            margin-left: 0;       /* We handle sides via padding below to prevent cutting off */
-            margin-right: 0;
         }
 
         body { 
@@ -316,40 +312,42 @@
             padding: 0;
         }
 
-        /* 2. NUCLEAR FONT FIX: The '*' selector catches EVERYTHING */
-        /* This fixes the 'L' glitch by ensuring no tiny element is left using Inter */
-        * {
-            font-family: Arial, Helvetica, sans-serif !important;
-            -webkit-print-color-adjust: exact; 
-            print-color-adjust: exact;
+        /* 2. FONT FIX: Switch to standard fonts for print to fix the 'l' glitch */
+        body, input, textarea, .summary-text, .report-table {
+            font-family: Helvetica, Arial, sans-serif !important;
         }
-
-        /* Exception: Keep your Titles fancy (Serif) */
-        h1, h2, .report-title, .section-title, .domain-title-bar {
+        /* Keep the Titles looking fancy (Serif), but switch to Georgia (Safe) */
+        h1, h2, .report-title, .section-title {
             font-family: Georgia, 'Times New Roman', serif !important;
         }
 
-        /* Hide Interface */
-        .editor-panel, .print-break, .btn, button { display: none !important; }
+        /* Hide Editor */
+        .editor-panel { display: none; }
         
+        /* 3. MARGIN FIX: Force the sheet to have padding since @page is 0 */
         .preview-panel { 
             width: 100%; 
             padding: 0; 
             display: block; 
         }
         
-        /* 3. MARGIN LOGIC */
         .document-sheet {
             width: 100%;
             margin: 0;
-            /* Top/Bottom is 0 because @page handles it now. Sides keep 20mm padding */
-            padding: 0 20mm !important; 
+            /* This 20mm padding creates your top/bottom/side margins */
+            padding: 20mm !important; 
             box-shadow: none;
             border: none;
         }
         
-        /* Prevent elements splitting awkwardly */
-        .domain-section, .summary-block { page-break-inside: avoid; }
+        /* Hide visual helpers */
+        .print-break { display: none; }
+        
+        button { display: none; }
+        .domain-section { page-break-inside: avoid; }
+        
+        /* Force Background Colors (Chrome/Safari requirement) */
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
 </style>
 </head>
