@@ -300,7 +300,11 @@
     @media print {
         /* 1. Hide Browser URL/Date but keep the paper size */
         @page {
-            margin: 0;
+            margin-top: 20mm;
+            margin-bottom: 20mm;
+            /* Keep sides at 0 so we can use your padding logic below */
+            margin-left: 0;
+            margin-right: 0;
             size: A4;
         }
 
@@ -313,7 +317,7 @@
         }
 
         /* 2. FONT FIX: Switch to standard fonts for print to fix the 'l' glitch */
-        body, input, textarea, .summary-text, .report-table {
+        * {
             font-family: Helvetica, Arial, sans-serif !important;
         }
         /* Keep the Titles looking fancy (Serif), but switch to Georgia (Safe) */
