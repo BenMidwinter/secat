@@ -300,13 +300,9 @@
     @media print {
         /* 1. Hide Browser URL/Date but keep the paper size */
         @page {
-            margin-top: 20mm;
-            margin-bottom: 20mm;
-            /* Keep sides at 0 so we can use your padding logic below */
-            margin-left: 0;
-            margin-right: 0;
-            size: A4;
-        }
+    margin: 0;
+    size: A4;
+}
 
         body { 
             background: white; 
@@ -314,6 +310,10 @@
             width: 100%;
             margin: 0; 
             padding: 0;
+
+            /* ADD THIS: Forces whitespace at the top of every printed sheet */
+    padding-top: 20mm !important; 
+    padding-bottom: 20mm !important;
         }
 
         /* 2. FONT FIX: Switch to standard fonts for print to fix the 'l' glitch */
@@ -339,7 +339,7 @@
             width: 100%;
             margin: 0;
             /* This 20mm padding creates your top/bottom/side margins */
-            padding: 20mm !important; 
+            padding: 0 20mm !important; 
             box-shadow: none;
             border: none;
         }
