@@ -2,6 +2,20 @@
 <html lang="en">
 <head>
     <meta name="robots" content="noindex, nofollow">
+    <script>
+    // CHANGE THIS to your Squarespace "Join" or "Login" page URL
+    const redirectUrl = "https://www.secat.app/costs"; 
+    
+    // CHANGE THIS to your chosen password
+    const mySecret = "F!r3F10W3r"; 
+
+    // The Logic
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("access") !== mySecret) {
+        // If the password isn't in the URL, kick them to Squarespace
+        window.location.href = redirectUrl;
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECAT™ - Summary of Engagement in Creative Arts Therapy</title>
