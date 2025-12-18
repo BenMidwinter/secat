@@ -296,75 +296,60 @@
         text-align: center;
     }
 
-   /* PRINT MEDIA QUERY - FINAL FIXES */
-   /* PRINT MEDIA QUERY - REPLACEMENT */
+   /* PRINT MEDIA QUERY - CORRECTED */
     @media print {
         /* 1. PAPER SETUP */
+        /* We add Top/Bottom margins here so they repeat on EVERY page (not just page 1) */
         @page {
-            /* Keep this at 0 to hide browser header/footer (Date/URL) */
-            margin: 0;
             size: A4;
+            margin-top: 15mm;     /* Gives you the header space on all pages */
+            margin-bottom: 15mm;  /* Gives you the footer space on all pages */
+            margin-left: 0;       /* We handle sides via padding below to prevent cutting off */
+            margin-right: 0;
         }
 
-        /* 2. MARGIN FIX: Create our own 'safe zone' on the paper */
-        body {
-            /* This creates the white space at the top/bottom of the page */
-            padding-top: 20mm !important;
-            padding-bottom: 20mm !important;
-            padding-left: 15mm !important;
-            padding-right: 15mm !important;
-            
-            background: white;
+        body { 
+            background: white; 
+            height: auto; 
             width: 100%;
-            height: auto;
+            margin: 0; 
+            padding: 0;
         }
 
-        /* 3. FONT FIX: The Nuclear Option */
-        /* This forces EVERY text element to use Arial, fixing the 'l' glitch */
+        /* 2. NUCLEAR FONT FIX: The '*' selector catches EVERYTHING */
+        /* This fixes the 'L' glitch by ensuring no tiny element is left using Inter */
         * {
             font-family: Arial, Helvetica, sans-serif !important;
             -webkit-print-color-adjust: exact; 
             print-color-adjust: exact;
         }
-        
-        /* Optional: Keep the headers fancy (Serif) if you prefer, 
-           remove this block if you want everything purely Arial */
-        h1, h2, .report-title, .section-title {
+
+        /* Exception: Keep your Titles fancy (Serif) */
+        h1, h2, .report-title, .section-title, .domain-title-bar {
             font-family: Georgia, 'Times New Roman', serif !important;
         }
 
-        /* 4. HIDE INTERFACE ELEMENTS */
-        .editor-panel, .print-break, .btn, button { 
-            display: none !important; 
-        }
-
-        /* 5. RESET LAYOUT FOR PAGE */
-        .app-container {
-            display: block; /* Disables the screen flex layout */
+        /* Hide Interface */
+        .editor-panel, .print-break, .btn, button { display: none !important; }
+        
+        .preview-panel { 
+            width: 100%; 
+            padding: 0; 
+            display: block; 
         }
         
-        .preview-panel {
-            width: 100%;
-            background: white;
-            padding: 0;
-            display: block;
-            overflow: visible; /* Lets content run across pages */
-        }
-        
-        /* Remove the 'Sheet' look (shadows/borders) so it looks like paper */
+        /* 3. MARGIN LOGIC */
         .document-sheet {
             width: 100%;
+            margin: 0;
+            /* Top/Bottom is 0 because @page handles it now. Sides keep 20mm padding */
+            padding: 0 20mm !important; 
             box-shadow: none;
             border: none;
-            padding: 0 !important; /* Padding is handled by body now */
-            margin: 0;
         }
         
-        /* Prevent graphs/tables from being cut in half */
-        .domain-section, .summary-block, .quadrant-wrapper {
-            break-inside: avoid;
-            page-break-inside: avoid;
-        }
+        /* Prevent elements splitting awkwardly */
+        .domain-section, .summary-block { page-break-inside: avoid; }
     }
 </style>
 </head>
